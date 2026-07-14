@@ -1,0 +1,3 @@
+[submodule "Swapi_App"]
+	path = Swapi_App
+	url = https://github.com/KrenarLipo/AltecProject.git
