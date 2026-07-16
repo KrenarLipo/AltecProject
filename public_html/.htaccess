@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# API front controller
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/(.*)$ api/index.php?__route=$1 [QSA,L]
+
+# Admin SPA (built React app) — serve real files/assets as-is, fall back to index.html for client-side routes
+RewriteCond %{REQUEST_URI} ^/admin/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^admin/(.*)$ admin/index.html [L]
+
+# Clean URLs for public pages
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^news/([a-zA-Z0-9-]+)/?$ news.php?slug=$1 [L,QSA]
+RewriteRule ^about/?$ about.php [L]
+RewriteRule ^partners/?$ partners.php [L]
+RewriteRule ^ac-sales-installation/?$ ac-sales-installation.php [L]
+RewriteRule ^reconstruction-furnishing/?$ reconstruction-furnishing.php [L]
+RewriteRule ^works/?$ works.php [L]
+RewriteRule ^news/?$ news.php [L]
+RewriteRule ^contact/?$ contact.php [L]

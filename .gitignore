@@ -1,0 +1,19 @@
+# local config (contains DB credentials)
+/config.php
+
+# admin-app (Vite/React) build artifacts
+admin-app/node_modules
+admin-app/dist
+
+# built admin SPA copied into the web root at deploy time
+public_html/admin/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# logs
+*.log
