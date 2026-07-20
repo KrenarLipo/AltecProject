@@ -32,6 +32,8 @@ docs/                  Architecture proposal PDF
 
 ## Local development
 
+Full walkthrough (prerequisites, first-time setup, day-to-day workflow, rebuilding the admin panel, troubleshooting) is in **[RUN_LOCALLY.md](RUN_LOCALLY.md)**. Quick version:
+
 1. Create `config.php` from `config.example.php` with your local MySQL credentials.
 2. Set up the database: import `schema.sql`, then run `ADMIN_EMAIL=you@example.com ADMIN_SEED_PASSWORD=yourpassword php seed.php` (skip this if your database already has data).
 3. Start the PHP server:
@@ -80,7 +82,9 @@ What's **not** done yet — worth addressing before this handles real traffic/co
 - Only one admin account, no roles/permissions, no 2FA
 - HTTPS is not yet enforced anywhere — must be configured at the hosting level (cPanel SSL/TLS) before going live; nothing today prevents the site being served over plain HTTP
 
-## Deployment (summary — see the architecture PDF for details)
+## Deployment
+
+Full step-by-step instructions for the actual GoDaddy shared cPanel account (addon domain setup, database creation, SSH deploy, SSL, troubleshooting) are in **[DEPLOY.md](DEPLOY.md)**. Summary:
 
 1. Upload the contents of `public_html/` to the cPanel account's document root
 2. Create the production MySQL database via cPanel, import `schema.sql`, run `seed.php` (or copy data from local)
