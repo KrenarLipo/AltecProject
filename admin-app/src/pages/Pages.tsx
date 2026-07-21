@@ -15,6 +15,8 @@ const emptyForm = {
   seoDescription: "",
   titleEn: "",
   bodyEn: "",
+  titleIt: "",
+  bodyIt: "",
   titleAl: "",
   bodyAl: "",
 };
@@ -35,6 +37,7 @@ export default function Pages() {
   function startEdit(page: Page) {
     setEditingId(page.id);
     const en = page.translations.find((t) => t.languageCode === "en");
+    const it = page.translations.find((t) => t.languageCode === "it");
     const al = page.translations.find((t) => t.languageCode === "al");
     setForm({
       slug: page.slug,
@@ -42,6 +45,8 @@ export default function Pages() {
       seoDescription: page.seoDescription ?? "",
       titleEn: en?.title ?? "",
       bodyEn: en?.body ?? "",
+      titleIt: it?.title ?? "",
+      bodyIt: it?.body ?? "",
       titleAl: al?.title ?? "",
       bodyAl: al?.body ?? "",
     });
@@ -60,6 +65,7 @@ export default function Pages() {
       seoDescription: form.seoDescription || null,
       translations: {
         en: { title: form.titleEn, body: form.bodyEn },
+        it: { title: form.titleIt, body: form.bodyIt },
         al: { title: form.titleAl, body: form.bodyAl },
       },
     };
@@ -126,6 +132,14 @@ export default function Pages() {
         <label>
           Body (English)
           <textarea value={form.bodyEn} onChange={(e) => setForm({ ...form, bodyEn: e.target.value })} rows={6} />
+        </label>
+        <label>
+          Title (Italian)
+          <input value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
+        </label>
+        <label>
+          Body (Italian)
+          <textarea value={form.bodyIt} onChange={(e) => setForm({ ...form, bodyIt: e.target.value })} rows={6} />
         </label>
         <label>
           Title (Albanian)

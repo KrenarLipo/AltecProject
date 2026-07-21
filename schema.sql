@@ -16,6 +16,8 @@ CREATE TABLE `AdminUser` (
     `email` VARCHAR(191) NOT NULL,
     `passwordHash` VARCHAR(191) NOT NULL,
     `role` ENUM('OWNER', 'EDITOR') NOT NULL DEFAULT 'OWNER',
+    `resetToken` VARCHAR(191) NULL,
+    `resetTokenExpiresAt` DATETIME NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `AdminUser_email_key`(`email`),
@@ -38,6 +40,7 @@ CREATE TABLE `MenuItem` (
     `targetSlug` VARCHAR(191) NULL,
     `sortOrder` INTEGER NOT NULL DEFAULT 0,
     `visible` BOOLEAN NOT NULL DEFAULT true,
+    `location` ENUM('PRIMARY', 'FOOTER') NOT NULL DEFAULT 'PRIMARY',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,6 +82,7 @@ CREATE TABLE `Product` (
     `categoryId` INTEGER NULL,
     `brand` VARCHAR(191) NULL,
     `published` BOOLEAN NOT NULL DEFAULT false,
+    `brochureUrl` VARCHAR(500) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -102,6 +106,7 @@ CREATE TABLE `ProductImage` (
     `productId` INTEGER NOT NULL,
     `url` VARCHAR(191) NOT NULL,
     `sortOrder` INTEGER NOT NULL DEFAULT 0,
+    `isPrimary` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -133,7 +138,32 @@ CREATE TABLE `WorkItemImage` (
     `workItemId` INTEGER NOT NULL,
     `url` VARCHAR(191) NOT NULL,
     `sortOrder` INTEGER NOT NULL DEFAULT 0,
+    `isPrimary` BOOLEAN NOT NULL DEFAULT false,
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Slide` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `mediaType` ENUM('IMAGE', 'VIDEO') NOT NULL DEFAULT 'IMAGE',
+    `mediaUrl` VARCHAR(500) NOT NULL,
+    `linkUrl` VARCHAR(500) NULL,
+    `sortOrder` INTEGER NOT NULL DEFAULT 0,
+    `visible` BOOLEAN NOT NULL DEFAULT true,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `SlideTranslation` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `slideId` INTEGER NOT NULL,
+    `languageCode` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NULL,
+    `subtitle` VARCHAR(500) NULL,
+
+    UNIQUE INDEX `SlideTranslation_slideId_languageCode_key`(`slideId`, `languageCode`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -247,3 +277,9 @@ ALTER TABLE `PageTranslation` ADD CONSTRAINT `PageTranslation_pageId_fkey` FOREI
 
 -- AddForeignKey
 ALTER TABLE `PageTranslation` ADD CONSTRAINT `PageTranslation_languageCode_fkey` FOREIGN KEY (`languageCode`) REFERENCES `Language`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `SlideTranslation` ADD CONSTRAINT `SlideTranslation_slideId_fkey` FOREIGN KEY (`slideId`) REFERENCES `Slide`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `SlideTranslation` ADD CONSTRAINT `SlideTranslation_languageCode_fkey` FOREIGN KEY (`languageCode`) REFERENCES `Language`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;

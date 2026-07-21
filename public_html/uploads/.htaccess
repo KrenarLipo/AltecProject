@@ -1,0 +1,8 @@
+# User-uploaded files only — never execute scripts from here, even if
+# someone manages to upload a disguised file (defense in depth on top of
+# the server-side mime sniffing in api/handlers/uploads.php).
+php_flag engine off
+
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|cgi|pl)$">
+    Require all denied
+</FilesMatch>

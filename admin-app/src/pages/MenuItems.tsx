@@ -8,6 +8,7 @@ type MenuItem = {
   targetSlug: string | null;
   sortOrder: number;
   visible: boolean;
+  location: "PRIMARY" | "FOOTER";
   translations: { languageCode: string; label: string }[];
 };
 
@@ -17,7 +18,9 @@ const emptyForm = {
   targetSlug: "",
   sortOrder: 0,
   visible: true,
+  location: "PRIMARY" as MenuItem["location"],
   labelEn: "",
+  labelIt: "",
   labelAl: "",
 };
 
@@ -42,7 +45,9 @@ export default function MenuItems() {
       targetSlug: item.targetSlug ?? "",
       sortOrder: item.sortOrder,
       visible: item.visible,
+      location: item.location,
       labelEn: item.translations.find((t) => t.languageCode === "en")?.label ?? "",
+      labelIt: item.translations.find((t) => t.languageCode === "it")?.label ?? "",
       labelAl: item.translations.find((t) => t.languageCode === "al")?.label ?? "",
     });
   }
@@ -60,8 +65,10 @@ export default function MenuItems() {
       targetSlug: form.targetSlug || null,
       sortOrder: form.sortOrder,
       visible: form.visible,
+      location: form.location,
       translations: {
         en: { label: form.labelEn },
+        it: { label: form.labelIt },
         al: { label: form.labelAl },
       },
     };
@@ -89,6 +96,7 @@ export default function MenuItems() {
         <thead>
           <tr>
             <th align="left">Label (EN)</th>
+            <th align="left">Location</th>
             <th align="left">Link Type</th>
             <th align="left">Target</th>
             <th align="left">Order</th>
@@ -100,6 +108,7 @@ export default function MenuItems() {
           {items.map((item) => (
             <tr key={item.id}>
               <td>{item.translations.find((t) => t.languageCode === "en")?.label ?? "—"}</td>
+              <td>{item.location === "FOOTER" ? "Footer" : "Primary"}</td>
               <td>{item.linkType}</td>
               <td>{item.targetSlug ?? "—"}</td>
               <td>{item.sortOrder}</td>
@@ -126,6 +135,16 @@ export default function MenuItems() {
                   {item.translations.find((t) => t.languageCode === "en")?.label ?? `#${item.id}`}
                 </option>
               ))}
+          </select>
+        </label>
+        <label>
+          Location
+          <select
+            value={form.location}
+            onChange={(e) => setForm({ ...form, location: e.target.value as MenuItem["location"] })}
+          >
+            <option value="PRIMARY">Primary (header nav)</option>
+            <option value="FOOTER">Footer</option>
           </select>
         </label>
         <label>
@@ -163,6 +182,10 @@ export default function MenuItems() {
         <label>
           Label (English)
           <input value={form.labelEn} onChange={(e) => setForm({ ...form, labelEn: e.target.value })} required />
+        </label>
+        <label>
+          Label (Italian)
+          <input value={form.labelIt} onChange={(e) => setForm({ ...form, labelIt: e.target.value })} />
         </label>
         <label>
           Label (Albanian)

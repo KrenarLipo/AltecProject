@@ -1,6 +1,10 @@
 <?php
 require_admin();
 
+if ($sub !== null && $subResource === 'images') {
+    handle_item_images($pdo, 'ProductImage', 'productId', (int) $sub, $method, $subResourceId);
+}
+
 if ($method === 'GET' && $sub === null) {
     $products = $pdo->query('SELECT * FROM Product ORDER BY id ASC')->fetchAll();
     attach_translations($pdo, 'ProductTranslation', 'productId', $products);
@@ -15,11 +19,12 @@ if ($method === 'GET' && $sub === null) {
 
 if ($method === 'POST' && $sub === null) {
     $body = request_body();
-    $stmt = $pdo->prepare('INSERT INTO Product (categoryId, brand, published) VALUES (?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO Product (categoryId, brand, published, brochureUrl) VALUES (?, ?, ?, ?)');
     $stmt->execute([
         $body['categoryId'] ?? null,
         $body['brand'] ?? null,
         !empty($body['published']) ? 1 : 0,
+        $body['brochureUrl'] ?? null,
     ]);
     $id = (int) $pdo->lastInsertId();
     save_translations($pdo, 'ProductTranslation', 'productId', $id, $body['translations'] ?? [], ['name', 'description']);
@@ -35,16 +40,20 @@ if ($sub !== null && $method === 'GET') {
     }
     $rows = [$product];
     attach_translations($pdo, 'ProductTranslation', 'productId', $rows);
+    $imgStmt = $pdo->prepare('SELECT * FROM ProductImage WHERE productId = ? ORDER BY sortOrder ASC');
+    $imgStmt->execute([$sub]);
+    $rows[0]['images'] = $imgStmt->fetchAll();
     json_response($rows[0]);
 }
 
 if ($sub !== null && $method === 'PUT') {
     $body = request_body();
-    $stmt = $pdo->prepare('UPDATE Product SET categoryId = ?, brand = ?, published = ? WHERE id = ?');
+    $stmt = $pdo->prepare('UPDATE Product SET categoryId = ?, brand = ?, published = ?, brochureUrl = ? WHERE id = ?');
     $stmt->execute([
         $body['categoryId'] ?? null,
         $body['brand'] ?? null,
         !empty($body['published']) ? 1 : 0,
+        $body['brochureUrl'] ?? null,
         $sub,
     ]);
     save_translations($pdo, 'ProductTranslation', 'productId', (int) $sub, $body['translations'] ?? [], ['name', 'description']);

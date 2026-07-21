@@ -1,0 +1,138 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap");
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(120deg, #ed1c24 0%, #b3161d 45%, #00a2e8 100%);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.5rem 2rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.auth-logo {
+  display: block;
+  width: 140px;
+  margin: 0 auto 1.5rem;
+}
+
+.auth-title {
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #1c1c1c;
+  text-align: center;
+  margin: 0 0 0.35rem;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #6b6b6b;
+  font-size: 0.9rem;
+  margin: 0 0 1.75rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1c1c1c;
+}
+
+.auth-field input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-field input:focus {
+  border-color: #00a2e8;
+  box-shadow: 0 0 0 3px rgba(0, 162, 232, 0.15);
+}
+
+.auth-submit {
+  margin-top: 0.25rem;
+  background: #ed1c24;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.2rem;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: #c8151b;
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  color: #c8151b;
+  background: #fdecec;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.auth-success {
+  color: #0a6b3d;
+  background: #e9f8f0;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.auth-links a {
+  color: #00a2e8;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-links.centered {
+  justify-content: center;
+}

@@ -10,8 +10,8 @@ if ($method === 'GET' && $sub === null) {
 if ($method === 'POST' && $sub === null) {
     $body = request_body();
     $stmt = $pdo->prepare('
-        INSERT INTO MenuItem (parentId, linkType, targetSlug, sortOrder, visible)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO MenuItem (parentId, linkType, targetSlug, sortOrder, visible, location)
+        VALUES (?, ?, ?, ?, ?, ?)
     ');
     $stmt->execute([
         $body['parentId'] ?? null,
@@ -19,6 +19,7 @@ if ($method === 'POST' && $sub === null) {
         $body['targetSlug'] ?? null,
         $body['sortOrder'] ?? 0,
         !empty($body['visible']) ? 1 : 0,
+        $body['location'] ?? 'PRIMARY',
     ]);
     $id = (int) $pdo->lastInsertId();
     save_translations($pdo, 'MenuItemTranslation', 'menuItemId', $id, $body['translations'] ?? [], ['label']);
@@ -28,7 +29,7 @@ if ($method === 'POST' && $sub === null) {
 if ($sub !== null && $method === 'PUT') {
     $body = request_body();
     $stmt = $pdo->prepare('
-        UPDATE MenuItem SET parentId = ?, linkType = ?, targetSlug = ?, sortOrder = ?, visible = ?
+        UPDATE MenuItem SET parentId = ?, linkType = ?, targetSlug = ?, sortOrder = ?, visible = ?, location = ?
         WHERE id = ?
     ');
     $stmt->execute([
@@ -37,6 +38,7 @@ if ($sub !== null && $method === 'PUT') {
         $body['targetSlug'] ?? null,
         $body['sortOrder'] ?? 0,
         !empty($body['visible']) ? 1 : 0,
+        $body['location'] ?? 'PRIMARY',
         $sub,
     ]);
     save_translations($pdo, 'MenuItemTranslation', 'menuItemId', (int) $sub, $body['translations'] ?? [], ['label']);

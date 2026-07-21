@@ -1,6 +1,10 @@
 <?php
 require_admin();
 
+if ($sub !== null && $subResource === 'images') {
+    handle_item_images($pdo, 'WorkItemImage', 'workItemId', (int) $sub, $method, $subResourceId);
+}
+
 if ($method === 'GET' && $sub === null) {
     $items = $pdo->query('SELECT * FROM WorkItem ORDER BY id ASC')->fetchAll();
     attach_translations($pdo, 'WorkItemTranslation', 'workItemId', $items);

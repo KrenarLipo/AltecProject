@@ -11,6 +11,7 @@ type Category = {
 const emptyForm = {
   type: "PRODUCT" as "SERVICE" | "PRODUCT",
   nameEn: "",
+  nameIt: "",
   nameAl: "",
 };
 
@@ -32,6 +33,7 @@ export default function Categories() {
     setForm({
       type: category.type,
       nameEn: category.translations.find((t) => t.languageCode === "en")?.name ?? "",
+      nameIt: category.translations.find((t) => t.languageCode === "it")?.name ?? "",
       nameAl: category.translations.find((t) => t.languageCode === "al")?.name ?? "",
     });
   }
@@ -47,6 +49,7 @@ export default function Categories() {
       type: form.type,
       translations: {
         en: { name: form.nameEn },
+        it: { name: form.nameIt },
         al: { name: form.nameAl },
       },
     };
@@ -104,6 +107,10 @@ export default function Categories() {
         <label>
           Name (English)
           <input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} required />
+        </label>
+        <label>
+          Name (Italian)
+          <input value={form.nameIt} onChange={(e) => setForm({ ...form, nameIt: e.target.value })} />
         </label>
         <label>
           Name (Albanian)

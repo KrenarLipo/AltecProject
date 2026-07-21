@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
+import "./AuthPages.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,22 +28,29 @@ export default function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 360, margin: "4rem auto" }}>
-      <h1>Admin Login</h1>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <label>
-          Email
-          <input name="email" type="email" required />
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" required />
-        </label>
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Signing in..." : "Sign in"}
-        </button>
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-      </form>
+    <div className="auth-page">
+      <div className="auth-card">
+        <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        <h1 className="auth-title">Admin Login</h1>
+        <p className="auth-subtitle">Sign in to manage the Altec website</p>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label className="auth-field">
+            Email
+            <input name="email" type="email" autoComplete="username" required />
+          </label>
+          <label className="auth-field">
+            Password
+            <input name="password" type="password" autoComplete="current-password" required />
+          </label>
+          {error && <p className="auth-error">{error}</p>}
+          <button type="submit" className="auth-submit" disabled={submitting}>
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+        <div className="auth-links centered">
+          <Link to="/forgot-password">Forgot your password?</Link>
+        </div>
+      </div>
     </div>
   );
 }

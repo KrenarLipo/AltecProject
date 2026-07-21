@@ -22,6 +22,8 @@ $pdo->prepare('INSERT INTO Language (code, label) VALUES (?, ?) ON DUPLICATE KEY
     ->execute(['en', 'English']);
 $pdo->prepare('INSERT INTO Language (code, label) VALUES (?, ?) ON DUPLICATE KEY UPDATE label = VALUES(label)')
     ->execute(['al', 'Shqip']);
+$pdo->prepare('INSERT INTO Language (code, label) VALUES (?, ?) ON DUPLICATE KEY UPDATE label = VALUES(label)')
+    ->execute(['it', 'Italiano']);
 
 // Admin user
 $passwordHash = password_hash($adminPassword, PASSWORD_BCRYPT);
@@ -51,37 +53,40 @@ foreach ($defaultSettings as $key => $value) {
     $settingStmt->execute([$key, $value]);
 }
 
-// Default menu
+// Default menu. Partners is intentionally not a menu item — it's a homepage
+// section instead. News and Blog are footer-only (Blog links to the same
+// /news content, just a second label).
 $menuItems = [
-    ['targetSlug' => '/', 'linkType' => 'URL', 'labelEn' => 'Home', 'labelAl' => 'Kryefaqja', 'sortOrder' => 0],
-    ['targetSlug' => '/ac-sales-installation', 'linkType' => 'URL', 'labelEn' => 'AC Sales & Installation', 'labelAl' => 'Shitje & Instalim Kondicioneri', 'sortOrder' => 1],
-    ['targetSlug' => '/reconstruction-furnishing', 'linkType' => 'URL', 'labelEn' => 'Reconstruction & Furnishing', 'labelAl' => 'Rikonstruksion & Mobilim', 'sortOrder' => 2],
-    ['targetSlug' => 'about', 'linkType' => 'PAGE', 'labelEn' => 'About Us', 'labelAl' => 'Rreth Nesh', 'sortOrder' => 3],
-    ['targetSlug' => 'partners', 'linkType' => 'PAGE', 'labelEn' => 'Partners', 'labelAl' => 'Partnerë', 'sortOrder' => 4],
-    ['targetSlug' => '/works', 'linkType' => 'URL', 'labelEn' => 'Works', 'labelAl' => 'Punimet', 'sortOrder' => 5],
-    ['targetSlug' => '/news', 'linkType' => 'URL', 'labelEn' => 'News', 'labelAl' => 'Lajme', 'sortOrder' => 6],
-    ['targetSlug' => '/contact', 'linkType' => 'URL', 'labelEn' => 'Contact', 'labelAl' => 'Kontakt', 'sortOrder' => 7],
+    ['targetSlug' => '/', 'linkType' => 'URL', 'location' => 'PRIMARY', 'labelEn' => 'Home', 'labelIt' => 'Home', 'labelAl' => 'Kryefaqja', 'sortOrder' => 0],
+    ['targetSlug' => '/ac-sales-installation', 'linkType' => 'URL', 'location' => 'PRIMARY', 'labelEn' => 'AC Sales & Installation', 'labelIt' => 'Vendita e Installazione Climatizzatori', 'labelAl' => 'Shitje & Instalim Kondicioneri', 'sortOrder' => 1],
+    ['targetSlug' => '/reconstruction-furnishing', 'linkType' => 'URL', 'location' => 'PRIMARY', 'labelEn' => 'Reconstruction & Furnishing', 'labelIt' => 'Ristrutturazione & Arredamento', 'labelAl' => 'Rikonstruksion & Mobilim', 'sortOrder' => 2],
+    ['targetSlug' => 'about', 'linkType' => 'PAGE', 'location' => 'PRIMARY', 'labelEn' => 'About Us', 'labelIt' => 'Chi Siamo', 'labelAl' => 'Rreth Nesh', 'sortOrder' => 3],
+    ['targetSlug' => '/works', 'linkType' => 'URL', 'location' => 'PRIMARY', 'labelEn' => 'Works', 'labelIt' => 'Lavori', 'labelAl' => 'Punimet', 'sortOrder' => 4],
+    ['targetSlug' => '/contact', 'linkType' => 'URL', 'location' => 'PRIMARY', 'labelEn' => 'Contact', 'labelIt' => 'Contatti', 'labelAl' => 'Kontakt', 'sortOrder' => 5],
+    ['targetSlug' => '/news', 'linkType' => 'URL', 'location' => 'FOOTER', 'labelEn' => 'News', 'labelIt' => 'Notizie', 'labelAl' => 'Lajme', 'sortOrder' => 0],
+    ['targetSlug' => '/news', 'linkType' => 'URL', 'location' => 'FOOTER', 'labelEn' => 'Blog', 'labelIt' => 'Blog', 'labelAl' => 'Blog', 'sortOrder' => 1],
 ];
 
-$findMenuItem = $pdo->prepare('SELECT id FROM MenuItem WHERE targetSlug = ? AND linkType = ?');
-$insertMenuItem = $pdo->prepare('INSERT INTO MenuItem (linkType, targetSlug, sortOrder) VALUES (?, ?, ?)');
+$findMenuItem = $pdo->prepare('SELECT id FROM MenuItem WHERE targetSlug = ? AND linkType = ? AND location = ?');
+$insertMenuItem = $pdo->prepare('INSERT INTO MenuItem (linkType, targetSlug, sortOrder, location) VALUES (?, ?, ?, ?)');
 $upsertMenuTranslation = $pdo->prepare('
     INSERT INTO MenuItemTranslation (menuItemId, languageCode, label) VALUES (?, ?, ?)
     ON DUPLICATE KEY UPDATE label = VALUES(label)
 ');
 
 foreach ($menuItems as $item) {
-    $findMenuItem->execute([$item['targetSlug'], $item['linkType']]);
+    $findMenuItem->execute([$item['targetSlug'], $item['linkType'], $item['location']]);
     $existing = $findMenuItem->fetch();
 
     if ($existing) {
         $id = (int) $existing['id'];
     } else {
-        $insertMenuItem->execute([$item['linkType'], $item['targetSlug'], $item['sortOrder']]);
+        $insertMenuItem->execute([$item['linkType'], $item['targetSlug'], $item['sortOrder'], $item['location']]);
         $id = (int) $pdo->lastInsertId();
     }
 
     $upsertMenuTranslation->execute([$id, 'en', $item['labelEn']]);
+    $upsertMenuTranslation->execute([$id, 'it', $item['labelIt']]);
     $upsertMenuTranslation->execute([$id, 'al', $item['labelAl']]);
 }
 

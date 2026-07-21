@@ -13,6 +13,8 @@ $route = $_GET['__route'] ?? '';
 $segments = array_values(array_filter(explode('/', $route), fn($s) => $s !== ''));
 $resource = $segments[0] ?? '';
 $sub = $segments[1] ?? null; // action name (auth) or numeric id (everything else)
+$subResource = $segments[2] ?? null; // e.g. "images" in /products/{id}/images[/{imageId}]
+$subResourceId = $segments[3] ?? null;
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = get_pdo();
 
@@ -26,6 +28,8 @@ $handlers = [
     'pages' => 'pages.php',
     'settings' => 'settings.php',
     'contact' => 'contact.php',
+    'uploads' => 'uploads.php',
+    'slides' => 'slides.php',
 ];
 
 if (!isset($handlers[$resource])) {

@@ -28,34 +28,49 @@ $pageTitle = 'Contact';
 require __DIR__ . '/includes/header.php';
 ?>
 
-<h1>Contact</h1>
-<?php if ($settings['contact_phone']): ?><p>Tel: <?= h($settings['contact_phone']) ?></p><?php endif; ?>
-<?php if ($settings['contact_email']): ?><p>Email: <?= h($settings['contact_email']) ?></p><?php endif; ?>
-<?php if ($settings['contact_address']): ?><p><?= h($settings['contact_address']) ?></p><?php endif; ?>
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow" style="color:#fff;">Get In Touch</span>
+    <h1>Contact</h1>
+    <p>Questions about AC installation, reconstruction, or a Viessmann product? Send us a message.</p>
+  </div>
+</section>
 
-<?php if ($submitted): ?>
-  <p>Thanks — we'll be in touch soon.</p>
-<?php else: ?>
-  <?php if ($error): ?><p style="color: crimson;"><?= h($error) ?></p><?php endif; ?>
-  <form method="post" style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 480px;">
-    <label>
-      Name
-      <input name="name" type="text" required value="<?= h($_POST['name'] ?? '') ?>">
-    </label>
-    <label>
-      Email
-      <input name="email" type="email" required value="<?= h($_POST['email'] ?? '') ?>">
-    </label>
-    <label>
-      Phone
-      <input name="phone" type="tel" value="<?= h($_POST['phone'] ?? '') ?>">
-    </label>
-    <label>
-      Message
-      <textarea name="message" required rows="5"><?= h($_POST['message'] ?? '') ?></textarea>
-    </label>
-    <button type="submit">Send</button>
-  </form>
-<?php endif; ?>
+<section class="section">
+  <div class="container" style="max-width: 620px;">
+    <?php if ($settings['contact_phone'] || $settings['contact_email'] || $settings['contact_address']): ?>
+      <ul class="info-list">
+        <?php if ($settings['contact_phone']): ?><li>Tel: <?= h($settings['contact_phone']) ?></li><?php endif; ?>
+        <?php if ($settings['contact_email']): ?><li>Email: <?= h($settings['contact_email']) ?></li><?php endif; ?>
+        <?php if ($settings['contact_address']): ?><li><?= h($settings['contact_address']) ?></li><?php endif; ?>
+      </ul>
+    <?php endif; ?>
+
+    <?php if ($submitted): ?>
+      <div class="form-note">Thanks — we'll be in touch soon.</div>
+    <?php else: ?>
+      <?php if ($error): ?><div class="form-note error" style="margin-bottom: 1rem;"><?= h($error) ?></div><?php endif; ?>
+      <form method="post">
+        <div class="form-field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required value="<?= h($_POST['name'] ?? '') ?>">
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required value="<?= h($_POST['email'] ?? '') ?>">
+        </div>
+        <div class="form-field">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" value="<?= h($_POST['phone'] ?? '') ?>">
+        </div>
+        <div class="form-field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required rows="5"><?= h($_POST['message'] ?? '') ?></textarea>
+        </div>
+        <button class="btn" type="submit">Send</button>
+      </form>
+    <?php endif; ?>
+  </div>
+</section>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

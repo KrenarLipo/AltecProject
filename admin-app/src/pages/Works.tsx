@@ -1,10 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../lib/api";
+import ImageManager, { type ManagedImage } from "../components/ImageManager";
 
 type WorkItem = {
   id: number;
   projectType: string | null;
   date: string | null;
+  images: ManagedImage[];
   translations: { languageCode: string; title: string; description: string }[];
 };
 
@@ -13,6 +15,8 @@ const emptyForm = {
   date: "",
   titleEn: "",
   descriptionEn: "",
+  titleIt: "",
+  descriptionIt: "",
   titleAl: "",
   descriptionAl: "",
 };
@@ -33,12 +37,15 @@ export default function Works() {
   function startEdit(item: WorkItem) {
     setEditingId(item.id);
     const en = item.translations.find((t) => t.languageCode === "en");
+    const it = item.translations.find((t) => t.languageCode === "it");
     const al = item.translations.find((t) => t.languageCode === "al");
     setForm({
       projectType: item.projectType ?? "",
       date: item.date ? item.date.slice(0, 10) : "",
       titleEn: en?.title ?? "",
       descriptionEn: en?.description ?? "",
+      titleIt: it?.title ?? "",
+      descriptionIt: it?.description ?? "",
       titleAl: al?.title ?? "",
       descriptionAl: al?.description ?? "",
     });
@@ -56,6 +63,7 @@ export default function Works() {
       date: form.date || null,
       translations: {
         en: { title: form.titleEn, description: form.descriptionEn },
+        it: { title: form.titleIt, description: form.descriptionIt },
         al: { title: form.titleAl, description: form.descriptionAl },
       },
     };
@@ -74,6 +82,8 @@ export default function Works() {
     await api.del(`/works/${id}`);
     load();
   }
+
+  const editingItem = items.find((i) => i.id === editingId) ?? null;
 
   return (
     <div>
@@ -104,6 +114,16 @@ export default function Works() {
       </table>
 
       <h2>{editingId ? "Edit Work" : "Add Work"}</h2>
+
+      {editingItem && (
+        <ImageManager resource="works" itemId={editingItem.id} images={editingItem.images} onChange={load} />
+      )}
+      {!editingId && (
+        <p style={{ color: "#888", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
+          Save the project first, then photos can be added while editing it.
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 480 }}>
         <label>
           Project Type
@@ -124,6 +144,14 @@ export default function Works() {
         <label>
           Description (English)
           <textarea value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} />
+        </label>
+        <label>
+          Title (Italian)
+          <input value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
+        </label>
+        <label>
+          Description (Italian)
+          <textarea value={form.descriptionIt} onChange={(e) => setForm({ ...form, descriptionIt: e.target.value })} />
         </label>
         <label>
           Title (Albanian)

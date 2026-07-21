@@ -19,6 +19,34 @@ if ($sub === 'login' && $method === 'POST') {
     json_response(['ok' => true]);
 }
 
+if ($sub === 'forgot-password' && $method === 'POST') {
+    $body = request_body();
+    $email = $body['email'] ?? null;
+
+    if (is_string($email) && trim($email) !== '') {
+        request_password_reset(trim($email));
+    }
+
+    // Same response whether or not the email exists, so this endpoint can't be used to enumerate admin accounts.
+    json_response(['ok' => true]);
+}
+
+if ($sub === 'reset-password' && $method === 'POST') {
+    $body = request_body();
+    $token = $body['token'] ?? null;
+    $password = $body['password'] ?? null;
+
+    if (!is_string($token) || !is_string($password) || strlen($password) < 8) {
+        json_response(['error' => 'Invalid request'], 400);
+    }
+
+    if (!reset_password_with_token($token, $password)) {
+        json_response(['error' => 'This reset link is invalid or has expired'], 400);
+    }
+
+    json_response(['ok' => true]);
+}
+
 if ($sub === 'logout' && $method === 'POST') {
     logout_session();
     json_response(['ok' => true]);

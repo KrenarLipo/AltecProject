@@ -1,3 +1,7 @@
+# Larger upload limits for the admin media uploader (images/PDFs/video slides)
+php_value upload_max_filesize 40M
+php_value post_max_size 45M
+
 RewriteEngine On
 
 # API front controller
@@ -14,6 +18,7 @@ RewriteRule ^admin/(.*)$ admin/index.html [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^news/([a-zA-Z0-9-]+)/?$ news.php?slug=$1 [L,QSA]
+RewriteRule ^works/([0-9]+)/?$ works.php?id=$1 [L,QSA]
 RewriteRule ^about/?$ about.php [L]
 RewriteRule ^partners/?$ partners.php [L]
 RewriteRule ^ac-sales-installation/?$ ac-sales-installation.php [L]

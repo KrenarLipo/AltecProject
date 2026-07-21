@@ -1,64 +1,47 @@
-# Deploying Altec to GoDaddy Shared cPanel Hosting
+# Deploying Altec
 
-This walks through getting the site live on the actual GoDaddy shared cPanel account (the one with SSH access, PHP/Python/Ruby app support, and no Node.js support — see `docs/Altec-Architecture-Proposal.pdf` for why the stack is PHP + static React admin).
+This is the actual, tested process for getting code and database changes onto the live server — written from what really worked, not a theoretical plan. Currently the site runs as a **staging copy** at `altec.appamora.com` (a subdomain on Krenar's own GoDaddy shared cPanel account, pointing at the `AltecAL` folder), for client review before the final move to the client's own server.
 
-## Prerequisites
+**Key fact that shapes everything below: there's no SSH/shell access on this hosting account**, even though the "SSH Access" icon appears in cPanel — GoDaddy has that disabled by default and it needs to be requested from support separately. Every step here works entirely through **FTP** and the website itself (via small, temporary, token-protected PHP scripts) instead.
 
-- cPanel login for the GoDaddy account (main domain `appamora.com`; `altec-al.com` will be an **addon domain** on the same account)
-- SSH access enabled (confirmed available — Security → SSH Access in cPanel)
-- The domain `altec-al.com` pointed at this hosting account (DNS/nameservers) — do this first if not already done, since DNS propagation can take a while and everything else can happen in parallel
+## One-time account setup (already done for appamora.com, needed again for the client's server)
 
-## 1. Add `altec-al.com` as an addon domain
+### 1. Check PHP extensions FIRST
 
-In cPanel: **Domains → Addon Domains** (or just **Domains**, depending on cPanel version) → add `altec-al.com`. This creates a document root for it, typically `~/altec-al.com/` or `~/public_html/altec-al.com/` depending on how cPanel names it — note the exact path cPanel gives you, you'll need it below.
+cPanel → **Software → Select PHP Version → Extensions**. This account's PHP install is minimal by default — twice now a feature worked perfectly locally and then failed on production with a `Class "X" not found` error until the extension was manually enabled. Check these are all ticked *before* deploying anything:
 
-## 2. Create the MySQL database
+- `pdo`
+- `pdo_mysql`
+- `mysqli`
+- `fileinfo` (needed for the media upload feature — mime-type detection)
+- `mbstring`
 
-cPanel → **MySQL Database Wizard** (under Databases):
-1. Create a database (e.g. `altec_prod`) — cPanel will prefix it with your account username, e.g. `youraccount_altec_prod`
-2. Create a database user with a strong password
-3. Add that user to the database with **All Privileges**
+### 2. Create a subdomain (or addon domain) pointing at the site folder
 
-Note the final database name, username, and password — cPanel-generated names are usually prefixed (`username_altec_prod`, `username_altec_admin`), not the plain names used locally.
+cPanel → **Domains → Create A New Domain**. Enter the subdomain/domain, and when it asks for the document root, point it at (or let it create) a folder — this becomes the equivalent of what this doc calls `AltecAL/` below. Confirm it actually routes before doing anything else:
 
-## 3. Get the code onto the server
-
-SSH in (`ssh youraccount@altec-al.com` or whatever host cPanel gives you), then:
-
-```bash
-cd ~/altec-al.com   # the addon domain's document root from step 1
-git clone https://github.com/KrenarLipo/AltecProject.git .
+```
+curl -H "Host: yoursubdomain.yourdomain.com" http://SERVER_IP/
 ```
 
-If the addon domain's folder isn't empty (cPanel sometimes drops a placeholder `index.html` in there), remove it first so `git clone .` doesn't complain.
+If that 404s with a generic "File not found" page (not a real Altec page), the domain isn't registered/routed yet — fix that first, nothing else will work.
 
-If SSH/git isn't workable for some reason, the fallback is: zip the repo locally, upload via cPanel's **File Manager**, and extract it there.
+### 3. Create the FTP account
 
-Either way, **only `public_html/`'s contents need to actually be under the web-servable document root** — everything else (`config.php`, `schema.sql`, `seed.php`, `admin-app/`) can live one level up, outside what's served to visitors. If cPanel gave you `~/altec-al.com/` as the doc root and the repo cloned directly into it, that's a problem — `public_html/*.php` would sit inside a `public_html` subfolder instead of at the root. Two ways to handle this:
-- Clone the repo *outside* the doc root (e.g. `~/altec-project-src/`), then symlink or copy `public_html/`'s contents into `~/altec-al.com/` — cleanest, keeps the deploy step scriptable, but means an extra copy step on every update.
-- Or point cPanel's document root for the addon domain directly at `.../public_html` inside the cloned repo (cPanel's addon domain settings let you specify a custom document root) — no copy step needed, simplest for a single-domain single-app setup like this one. **Recommended.**
+cPanel → **Files → FTP Accounts** → create a dedicated account (don't reuse an email account — they use the same `user@domain` format and are easy to confuse, and we burned real time on exactly that mix-up once already). Use the password generator and copy the value directly rather than typing one.
 
-## 4. Set up the database schema and data
+### 4. Create the MySQL database
 
-Still over SSH, from the repo root:
+cPanel → **MySQL® Databases**:
+1. Create a database (e.g. `altec_prod`)
+2. Create a database user — again, use the generator and copy the password directly
+3. Add the user to the database with **All Privileges**
 
-```bash
-mysql -u youraccount_altecadmin -p youraccount_altec_prod < schema.sql
-```
+Note whether cPanel prefixed the names with your account username or not — it varies by account. Confirm by actually connecting rather than assuming.
 
-(the `-p` flag prompts for the DB user's password from step 2)
+### 5. Create `config.php`
 
-Then seed the default admin account, languages, menu, and settings:
-
-```bash
-ADMIN_EMAIL=you@yourdomain.com ADMIN_SEED_PASSWORD='a-strong-password' php seed.php
-```
-
-Pick a real password here — this becomes the production admin login. Don't reuse the local dev password.
-
-## 5. Create `config.php`
-
-At the repo root on the server (**not** inside `public_html/`, so it's never web-accessible):
+This must live **one directory above** the site's document root folder (i.e. next to `AltecAL/`, not inside it) so it's never web-accessible:
 
 ```php
 <?php
@@ -67,24 +50,51 @@ return [
     'db' => [
         'host' => 'localhost',
         'port' => 3306,
-        'name' => 'youraccount_altec_prod',
-        'user' => 'youraccount_altecadmin',
-        'pass' => 'the-db-password-from-step-2',
+        'name' => 'the_database_name',
+        'user' => 'the_database_user',
+        'pass' => 'the_database_password',
     ],
 ];
 ```
 
-Copy `config.example.php` as a starting point (`cp config.example.php config.php`) and edit it in place, or create it directly with the values above.
+`host` is always `localhost` here — PHP on the server always reaches MySQL locally, regardless of whether "Remote MySQL" is set up (that setting only affects connections from *outside* the server).
 
-## 6. Set the PHP version
+## Getting the code onto the server (FTP)
 
-cPanel → **Select PHP Version** (Software section) → choose PHP 8.1+ (this project was built and tested against 8.3). Make sure the following extensions are enabled (they're on by default in most cPanel PHP builds): `pdo_mysql`, `mbstring`, `mysqli`.
+There's no `git clone` on the server. Upload `public_html/`'s contents via FTP so they land **directly inside** the site's document root folder (not in a `public_html` subfolder inside it):
 
-## 7. Build and deploy the admin panel
+```bash
+cd public_html
+for f in $(find . -type f); do
+  curl -T "$f" -u 'ftpuser@yourdomain.com:the-ftp-password' "ftp://SERVER_IP/AltecAL/$f"
+done
+```
 
-This is the one piece that needs a Node.js build step — but it happens **on your own machine**, not the server (remember: the server has no Node.js support at all).
+(`--ftp-create-dirs` is on by default in recent curl for missing subdirectories; add `curl --ftp-create-dirs` explicitly on older versions.)
 
-Locally:
+Also upload `schema.sql` **one level above** the document root (next to `config.php`) — it's not meant to be web-accessible either.
+
+## Setting up the database schema and default data
+
+Since there's no shell to run `php seed.php` directly, use a **temporary, token-protected PHP script** uploaded into the site folder, triggered once by URL, then deleted. This is the standard pattern for anything that needs to run server-side once — first-time schema setup, and every future migration.
+
+1. Write a small script (see `migrate-v2-once.php` / `migrate-v3-once.php` in git history for real examples) that:
+   - Checks a hardcoded random token in `$_GET['token']` before doing anything (`http_response_code(403); exit;` otherwise)
+   - Connects using `config.php`
+   - Runs the SQL statements (schema creation and/or seed logic)
+   - Prints what it did
+2. Upload it into the site folder via FTP
+3. Trigger it once:
+   ```bash
+   curl -H "Host: yoursubdomain.yourdomain.com" "http://SERVER_IP/the-script.php?token=your-random-token"
+   ```
+4. **Delete it immediately** via FTP once it's confirmed working. Never leave one of these on the server.
+
+For the very first setup, run `schema.sql` this way, then seed the admin account/settings/menu (the logic in `seed.php`, adapted into the same one-time-script pattern since it needs real `ADMIN_EMAIL`/`ADMIN_SEED_PASSWORD` values passed in, e.g. as query params on the same protected request).
+
+## Building and deploying the admin panel
+
+The only step that touches Node.js — and it happens on your own machine, never on the server:
 
 ```bash
 cd admin-app
@@ -92,42 +102,39 @@ npm install
 npm run build
 ```
 
-Then upload the resulting `admin-app/dist/` folder's contents to `public_html/admin/` on the server (via `scp`, `rsync`, or File Manager upload). Example with `rsync` over SSH:
+Then upload `admin-app/dist/`'s contents into `AltecAL/admin/` via FTP. **Important gotcha**: Vite hashes filenames on every build (e.g. `index-Bxx7YB_w.js`), so old and new builds have *different* filenames. When cleaning up the previous build's files, delete them **by their exact old filename** — not by "anything matching what I'm about to upload." If a file's content didn't change between builds (common for CSS), it'll get the *same* hash both times, and a blanket "delete anything with this name" cleanup step will delete the file you just uploaded. Always list the remote `admin/assets/` folder before and after to confirm what's actually there.
 
-```bash
-rsync -avz --delete admin-app/dist/ youraccount@altec-al.com:~/altec-project-src/public_html/admin/
-```
+## Enable SSL/TLS
 
-(adjust the remote path to wherever your `public_html/` actually lives per step 3).
-
-## 8. Enable SSL/TLS
-
-cPanel → **SSL/TLS Status** (or **SSL/TLS**) → make sure `altec-al.com` has a certificate issued (GoDaddy/cPanel usually auto-provisions a free AutoSSL certificate once the domain is added and DNS resolves correctly — can take some time). Once issued, consider forcing HTTPS via a redirect rule at the top of `public_html/.htaccess`:
+cPanel → **SSL/TLS Status** → confirm a certificate is issued once DNS resolves. Add a force-HTTPS rule as the first line of `public_html/.htaccess` once it is:
 
 ```apache
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ```
 
-(add this as the first rule, before the existing rewrite rules already in that file).
+## Verifying it's actually working
 
-## 9. Verify it's actually working
+- Homepage loads, menu renders, images/slideshow load
+- Click through every nav item and footer link — no 404s or PHP error output
+- Submit the contact form, then confirm it shows up under the admin's Contact Submissions
+- Log into `/admin`, create a test product with an uploaded photo, confirm it appears on the public site with the right thumbnail, then delete it
 
-- Visit `https://altec-al.com/` — homepage loads, menu renders
-- Click through each nav item (`/about`, `/ac-sales-installation`, `/reconstruction-furnishing`, `/works`, `/news`, `/contact`, `/partners`) — no 404s or PHP errors
-- Submit the contact form — confirm no error, then check it landed in the database (or just check the admin panel in the next step)
-- Visit `https://altec-al.com/admin` — log in with the email/password from step 4
-- Confirm the contact submission from the previous check shows up under Contact Submissions
-- Create a test product, confirm it shows up on the public AC Sales & Installation page, then delete it
+## Routine changes after the initial deploy
 
-## Redeploying after future changes
+- **PHP file changed** (a page, an API handler, an include): re-upload just that file via FTP. Takes effect immediately, no build step, no cache to clear.
+- **Admin panel changed**: `npm run build` locally → upload the new `dist/` files into `AltecAL/admin/` → delete the specific old-hash files (see the gotcha above).
+- **Database schema changed**: write a new `migrate-vN.sql` + matching one-time protected runner script, following the exact pattern above. Keep `schema.sql` updated to match so a fresh install stays accurate. Never hand-run `ALTER TABLE` against production without going through this scripted, repeatable pattern — it's what makes changes reviewable and repeatable instead of one-off tribal knowledge.
+- **Content changes** (products, menu, pages, settings, translations): just use `/admin` — no deployment needed at all, this is what the CMS is for.
 
-- **PHP changes** (public site or API): just re-upload/`git pull` the changed files — takes effect immediately, no build step
-- **Admin panel changes**: repeat step 7 (`npm run build` locally, re-upload `dist/` to `public_html/admin/`)
-- **Database schema changes**: there's no migration tool in this stack (no ORM) — schema changes need a manually written `ALTER TABLE` SQL run by hand against the production database, applied carefully, ideally on a backup first
+## Moving from staging (appamora.com) to the client's real server
+
+Everything above is written generically on purpose — repeat the same steps against the client's hosting account. The one thing to re-verify is the PHP extensions checklist at the top (assume nothing is enabled until confirmed), since that's the step most likely to differ between hosts. The code itself needs zero changes — no absolute-domain assumptions are baked in anywhere.
 
 ## Troubleshooting
 
-- **500 error on any PHP page**: check `error_reporting`/`display_errors` are on (they are, per `includes/bootstrap.php`) and look at cPanel's **Errors** log, or the domain's error log via File Manager. Most likely cause: `config.php` missing or has wrong DB credentials.
-- **Admin panel loads but API calls fail**: check the `.htaccess` rewrite rules made it into `public_html/.htaccess` (some upload methods skip dotfiles — verify via File Manager, showing hidden files enabled) and that `mod_rewrite` is enabled on the account (standard on cPanel, but confirm with your host if issues persist).
-- **Login works locally but not in production**: double check `seed.php` was actually run against the production database with the credentials you expect, and that `config.php` on the server points at the same database you seeded.
+- **`Class "X" not found` fatal error**: a required PHP extension isn't enabled. See the checklist at the top.
+- **500 error on any PHP page**: check `config.php` exists at the right path with correct DB credentials — this is the most common cause. `display_errors` is on (`includes/bootstrap.php`), so the actual error should be visible in the response.
+- **Admin panel loads but every API call fails**: `.htaccess` didn't upload correctly (some FTP clients skip dotfiles by default — make sure yours doesn't) or `mod_rewrite` isn't enabled (standard on cPanel, but confirm with the host if this happens).
+- **A one-time migration script errors with "already exists"**: safe to ignore if you're re-running after a partial failure — the runner scripts skip statements that error with "already exists" or "Duplicate column" and continue.
+- **FTP login fails repeatedly with different passwords**: stop guessing passwords — go back into cPanel and actually reset it with the generator, copy the value directly. Three wrong-password attempts in a row on this project all turned out to be human transcription, not a real auth problem.

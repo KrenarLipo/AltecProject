@@ -51,6 +51,12 @@ if (preg_match('#^/news/([a-zA-Z0-9-]+)/?$#', $uri, $m)) {
     return true;
 }
 
+if (preg_match('#^/works/([0-9]+)/?$#', $uri, $m)) {
+    $_GET['id'] = $m[1];
+    require $root . '/works.php';
+    return true;
+}
+
 if (preg_match('#^/news/?$#', $uri)) {
     require $root . '/news.php';
     return true;

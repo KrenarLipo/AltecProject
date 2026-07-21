@@ -84,10 +84,10 @@ What's **not** done yet — worth addressing before this handles real traffic/co
 
 ## Deployment
 
-Full step-by-step instructions for the actual GoDaddy shared cPanel account (addon domain setup, database creation, SSH deploy, SSL, troubleshooting) are in **[DEPLOY.md](DEPLOY.md)**. Summary:
+Full step-by-step instructions (this hosting account has **no SSH access**, so everything goes through FTP plus small temporary migration scripts — including the exact gotchas already hit and fixed) are in **[DEPLOY.md](DEPLOY.md)**. Summary:
 
-1. Upload the contents of `public_html/` to the cPanel account's document root
-2. Create the production MySQL database via cPanel, import `schema.sql`, run `seed.php` (or copy data from local)
-3. Create `config.php` on the server with production DB credentials
-4. Build the admin panel locally (`npm run build` in `admin-app/`) and upload `dist/` contents to `public_html/admin/` on the server
+1. Check the PHP extensions checklist in cPanel first (`pdo`, `pdo_mysql`, `mysqli`, `fileinfo`, `mbstring`) — this account's PHP install doesn't enable everything by default
+2. Upload `public_html/`'s contents via FTP directly into the site's document root folder; `config.php` and `schema.sql` go one level above it (never web-accessible)
+3. Create the production MySQL database via cPanel's wizard, then run schema/seed via a temporary token-protected PHP script (uploaded, triggered once by URL, deleted immediately)
+4. Build the admin panel locally (`npm run build` in `admin-app/`) and upload `dist/` contents via FTP — watch for Vite's hashed filenames when cleaning up old build artifacts
 5. Enable SSL/TLS via cPanel and confirm the site is only reachable over HTTPS

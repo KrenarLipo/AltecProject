@@ -50,18 +50,20 @@ function resolve_menu_href(array $item): string {
     return '#';
 }
 
-function get_menu_tree(string $lang = 'en'): array {
+function get_menu_tree(string $lang = 'en', string $location = 'PRIMARY'): array {
     $pdo = get_pdo();
 
     $stmt = $pdo->prepare('
-        SELECT mi.*, mit.label
+        SELECT mi.*, COALESCE(mit.label, mit_en.label) AS label
         FROM MenuItem mi
         LEFT JOIN MenuItemTranslation mit
             ON mit.menuItemId = mi.id AND mit.languageCode = ?
-        WHERE mi.visible = 1
+        LEFT JOIN MenuItemTranslation mit_en
+            ON mit_en.menuItemId = mi.id AND mit_en.languageCode = \'en\'
+        WHERE mi.visible = 1 AND mi.location = ?
         ORDER BY mi.sortOrder ASC
     ');
-    $stmt->execute([$lang]);
+    $stmt->execute([$lang, $location]);
     $rows = $stmt->fetchAll();
 
     $nodesById = [];
@@ -86,6 +88,26 @@ function get_menu_tree(string $lang = 'en'): array {
     unset($node);
 
     return $roots;
+}
+
+const SUPPORTED_LANGUAGES = ['en', 'it', 'al'];
+
+/** Resolves the active language from ?lang=, falling back to a cookie, falling back to 'en'. */
+function current_lang(): string {
+    $requested = $_GET['lang'] ?? null;
+    if (is_string($requested) && in_array($requested, SUPPORTED_LANGUAGES, true)) {
+        if (($_COOKIE['altec_lang'] ?? null) !== $requested) {
+            setcookie('altec_lang', $requested, time() + 60 * 60 * 24 * 365, '/');
+        }
+        return $requested;
+    }
+
+    $cookie = $_COOKIE['altec_lang'] ?? null;
+    if (is_string($cookie) && in_array($cookie, SUPPORTED_LANGUAGES, true)) {
+        return $cookie;
+    }
+
+    return 'en';
 }
 
 function pick_translation(array $translations, string $lang): ?array {
@@ -132,4 +154,57 @@ function attach_translations(PDO $pdo, string $table, string $fkColumn, array &$
         $row['translations'] = $stmt->fetchAll();
     }
     unset($row);
+}
+
+/**
+ * Handles the /{resource}/{id}/images[/{imageId}] sub-route shared by products and works.
+ * $imageTable/$fkColumn are internal (never client-controlled), safe to interpolate.
+ * Always ends the request (via json_response).
+ */
+function handle_item_images(
+    PDO $pdo,
+    string $imageTable,
+    string $fkColumn,
+    int $parentId,
+    string $method,
+    ?string $imageId,
+): void {
+    if ($method === 'POST' && $imageId === null) {
+        $body = request_body();
+        if (empty($body['url'])) {
+            json_response(['error' => 'Invalid request'], 400);
+        }
+        $stmt = $pdo->prepare("INSERT INTO `$imageTable` (`$fkColumn`, url, sortOrder) VALUES (?, ?, 0)");
+        $stmt->execute([$parentId, $body['url']]);
+        $id = (int) $pdo->lastInsertId();
+        $row = $pdo->prepare("SELECT * FROM `$imageTable` WHERE id = ?");
+        $row->execute([$id]);
+        json_response($row->fetch(), 201);
+    }
+
+    if ($method === 'PUT' && $imageId !== null) {
+        $body = request_body();
+        if (!empty($body['isPrimary'])) {
+            $pdo->prepare("UPDATE `$imageTable` SET isPrimary = 0 WHERE `$fkColumn` = ?")->execute([$parentId]);
+            $pdo->prepare("UPDATE `$imageTable` SET isPrimary = 1 WHERE id = ? AND `$fkColumn` = ?")
+                ->execute([$imageId, $parentId]);
+        }
+        json_response(['ok' => true]);
+    }
+
+    if ($method === 'DELETE' && $imageId !== null) {
+        $stmt = $pdo->prepare("SELECT url FROM `$imageTable` WHERE id = ? AND `$fkColumn` = ?");
+        $stmt->execute([$imageId, $parentId]);
+        $image = $stmt->fetch();
+        if ($image) {
+            $path = __DIR__ . '/../..' . $image['url'];
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+        $pdo->prepare("DELETE FROM `$imageTable` WHERE id = ? AND `$fkColumn` = ?")->execute([$imageId, $parentId]);
+        json_response(['ok' => true]);
+    }
+
+    json_response(['error' => 'Not found'], 404);
 }

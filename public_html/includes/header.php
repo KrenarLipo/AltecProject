@@ -1,31 +1,33 @@
 <?php
 /** @var string|null $pageTitle */
-$menu = get_menu_tree('en');
+/** @var string|null $lang */
+$lang = $lang ?? current_lang();
+$menu = get_menu_tree($lang);
+
+$languageLabels = [
+  'en' => ['flag' => '🇬🇧', 'name' => 'English'],
+  'it' => ['flag' => '🇮🇹', 'name' => 'Italiano'],
+  'al' => ['flag' => '🇦🇱', 'name' => 'Shqip'],
+];
+$currentPath = strtok($_SERVER['REQUEST_URI'], '?');
+parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery);
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= h($lang) ?>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= h(($pageTitle ?? '') !== '' ? $pageTitle . ' — Altec' : 'Altec') ?></title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; margin: 0; color: #171717; }
-    a { color: inherit; text-decoration: none; }
-    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
-    header { border-bottom: 1px solid #ddd; padding: 1rem; }
-    header .inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
-    nav ul { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
-    nav ul ul { list-style: none; padding-left: 1rem; }
-    footer { border-top: 1px solid #ddd; padding: 2rem 1rem; margin-top: 3rem; }
-    footer .inner { max-width: 1100px; margin: 0 auto; }
-  </style>
+  <title><?= h(($pageTitle ?? '') !== '' ? $pageTitle . ' — Altec Group' : 'Altec Group') ?></title>
+  <link rel="icon" type="image/png" href="/assets/img/altec-logo.png">
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-<header>
-  <div class="inner">
-    <a href="/" style="font-weight:700;font-size:1.25rem;">Altec</a>
-    <nav>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <img src="/assets/img/altec-logo.png" alt="Altec Group" width="150" height="83">
+    </a>
+    <nav class="main-nav">
       <ul>
         <?php foreach ($menu as $item): ?>
           <li>
@@ -41,6 +43,16 @@ $menu = get_menu_tree('en');
         <?php endforeach; ?>
       </ul>
     </nav>
+    <div class="lang-switch">
+      <?php foreach ($languageLabels as $code => $info): ?>
+        <?php $query = array_merge($currentQuery, ['lang' => $code]); ?>
+        <a href="<?= h($currentPath . '?' . http_build_query($query)) ?>"
+           class="<?= $code === $lang ? 'active' : '' ?>"
+           title="<?= h($info['name']) ?>" aria-label="<?= h($info['name']) ?>">
+          <span class="flag" aria-hidden="true"><?= $info['flag'] ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
   </div>
 </header>
 <main>
