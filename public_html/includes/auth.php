@@ -72,8 +72,7 @@ function request_password_reset(string $email): void {
     $body = "A password reset was requested for the Altec admin panel.\n\n"
         . "Set a new password here (link expires in 1 hour):\n$link\n\n"
         . "If you didn't request this, you can safely ignore this email.";
-    $fromDomain = preg_replace('/^www\./', '', $host);
-    $headers = "From: no-reply@$fromDomain\r\nContent-Type: text/plain; charset=UTF-8";
+    $headers = "From: klipo90@gmail.com\r\nContent-Type: text/plain; charset=UTF-8";
 
     mail($email, $subject, $body, $headers);
 }
