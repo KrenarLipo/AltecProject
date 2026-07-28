@@ -1,6 +1,8 @@
 <?php
 /** @var string|null $pageTitle */
 /** @var string|null $lang */
+enforce_site_status();
+
 $lang = $lang ?? current_lang();
 $menu = get_menu_tree($lang);
 

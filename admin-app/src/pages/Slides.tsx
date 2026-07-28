@@ -109,114 +109,165 @@ export default function Slides() {
 
   return (
     <div>
-      <h1>Homepage Slideshow</h1>
+      <h1 className="h3 mb-4">Homepage Slideshow</h1>
 
-      <table style={{ marginBottom: "1.5rem" }}>
-        <thead>
-          <tr>
-            <th align="left">Title (EN)</th>
-            <th align="left">Type</th>
-            <th align="left">Order</th>
-            <th align="left">Visible</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {slides.map((slide) => (
-            <tr key={slide.id}>
-              <td>{slide.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
-              <td>{slide.mediaType}</td>
-              <td>{slide.sortOrder}</td>
-              <td>{slide.visible ? "Yes" : "No"}</td>
-              <td>
-                <button onClick={() => startEdit(slide)}>Edit</button>{" "}
-                <button onClick={() => handleDelete(slide.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2>{editingId ? "Edit Slide" : "Add Slide"}</h2>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 480 }}>
-        <label>
-          Media Type
-          <select
-            value={form.mediaType}
-            onChange={(e) => setForm({ ...form, mediaType: e.target.value as "IMAGE" | "VIDEO", mediaUrl: "" })}
-          >
-            <option value="IMAGE">Image</option>
-            <option value="VIDEO">Video</option>
-          </select>
-        </label>
-        <label>
-          Upload {form.mediaType === "VIDEO" ? "video" : "image"}
-          <input
-            type="file"
-            accept={form.mediaType === "VIDEO" ? "video/*" : "image/*"}
-            onChange={handleUpload}
-            disabled={uploading}
-          />
-          {uploading && <span> Uploading...</span>}
-        </label>
-        {form.mediaUrl && (
-          <div>
-            {form.mediaType === "VIDEO" ? (
-              <video src={form.mediaUrl} style={{ maxWidth: 240 }} controls />
-            ) : (
-              <img src={form.mediaUrl} alt="" style={{ maxWidth: 240 }} />
-            )}
-          </div>
-        )}
-        <label>
-          Link URL (optional — where the slide's button goes)
-          <input value={form.linkUrl} onChange={(e) => setForm({ ...form, linkUrl: e.target.value })} placeholder="/ac-sales-installation" />
-        </label>
-        <label>
-          Sort Order
-          <input
-            type="number"
-            value={form.sortOrder}
-            onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })}
-          />
-        </label>
-        <label>
-          <input type="checkbox" checked={form.visible} onChange={(e) => setForm({ ...form, visible: e.target.checked })} />{" "}
-          Visible
-        </label>
-        <label>
-          Title (English)
-          <input value={form.titleEn} onChange={(e) => setForm({ ...form, titleEn: e.target.value })} />
-        </label>
-        <label>
-          Subtitle (English)
-          <input value={form.subtitleEn} onChange={(e) => setForm({ ...form, subtitleEn: e.target.value })} />
-        </label>
-        <label>
-          Title (Italian)
-          <input value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
-        </label>
-        <label>
-          Subtitle (Italian)
-          <input value={form.subtitleIt} onChange={(e) => setForm({ ...form, subtitleIt: e.target.value })} />
-        </label>
-        <label>
-          Title (Albanian)
-          <input value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
-        </label>
-        <label>
-          Subtitle (Albanian)
-          <input value={form.subtitleAl} onChange={(e) => setForm({ ...form, subtitleAl: e.target.value })} />
-        </label>
-        <div>
-          <button type="submit" disabled={!form.mediaUrl}>{editingId ? "Save" : "Add"}</button>{" "}
-          {editingId && (
-            <button type="button" onClick={resetForm}>
-              Cancel
-            </button>
-          )}
+      <div className="card shadow-sm mb-4">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Title (EN)</th>
+                <th>Type</th>
+                <th>Order</th>
+                <th>Visible</th>
+                <th className="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slides.map((slide) => (
+                <tr key={slide.id}>
+                  <td>{slide.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
+                  <td>{slide.mediaType}</td>
+                  <td>{slide.sortOrder}</td>
+                  <td>{slide.visible ? "Yes" : "No"}</td>
+                  <td className="text-end">
+                    <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => startEdit(slide)}>
+                      Edit
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(slide.id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {slides.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-muted text-center py-4">
+                    No slides yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </form>
+      </div>
+
+      <div className="card shadow-sm" style={{ maxWidth: 640 }}>
+        <div className="card-body">
+          <h2 className="h5 mb-3">{editingId ? "Edit Slide" : "Add Slide"}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-12 col-md-6">
+                <label className="form-label">Media Type</label>
+                <select
+                  className="form-select"
+                  value={form.mediaType}
+                  onChange={(e) => setForm({ ...form, mediaType: e.target.value as "IMAGE" | "VIDEO", mediaUrl: "" })}
+                >
+                  <option value="IMAGE">Image</option>
+                  <option value="VIDEO">Video</option>
+                </select>
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Upload {form.mediaType === "VIDEO" ? "video" : "image"}</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept={form.mediaType === "VIDEO" ? "video/*" : "image/*"}
+                  onChange={handleUpload}
+                  disabled={uploading}
+                />
+                {uploading && <span className="small text-muted">Uploading...</span>}
+              </div>
+
+              {form.mediaUrl && (
+                <div className="col-12">
+                  {form.mediaType === "VIDEO" ? (
+                    <video src={form.mediaUrl} className="rounded border" style={{ maxWidth: 260 }} controls />
+                  ) : (
+                    <img src={form.mediaUrl} alt="" className="rounded border" style={{ maxWidth: 260 }} />
+                  )}
+                </div>
+              )}
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Link URL (optional — where the slide's button goes)</label>
+                <input
+                  className="form-control"
+                  value={form.linkUrl}
+                  onChange={(e) => setForm({ ...form, linkUrl: e.target.value })}
+                  placeholder="/ac-sales-installation"
+                />
+              </div>
+              <div className="col-12 col-md-3">
+                <label className="form-label">Sort Order</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={form.sortOrder}
+                  onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })}
+                />
+              </div>
+              <div className="col-12 col-md-3 d-flex align-items-end">
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="slide-visible"
+                    checked={form.visible}
+                    onChange={(e) => setForm({ ...form, visible: e.target.checked })}
+                  />
+                  <label className="form-check-label" htmlFor="slide-visible">
+                    Visible
+                  </label>
+                </div>
+              </div>
+
+              <div className="col-12">
+                <hr />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (English)</label>
+                <input className="form-control" value={form.titleEn} onChange={(e) => setForm({ ...form, titleEn: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Subtitle (English)</label>
+                <input className="form-control" value={form.subtitleEn} onChange={(e) => setForm({ ...form, subtitleEn: e.target.value })} />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Italian)</label>
+                <input className="form-control" value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Subtitle (Italian)</label>
+                <input className="form-control" value={form.subtitleIt} onChange={(e) => setForm({ ...form, subtitleIt: e.target.value })} />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Albanian)</label>
+                <input className="form-control" value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Subtitle (Albanian)</label>
+                <input className="form-control" value={form.subtitleAl} onChange={(e) => setForm({ ...form, subtitleAl: e.target.value })} />
+              </div>
+            </div>
+
+            <div className="d-flex gap-2 mt-4">
+              <button type="submit" className="btn bg-primary text-white" disabled={!form.mediaUrl}>
+                {editingId ? "Save" : "Add"}
+              </button>
+              {editingId && (
+                <button type="button" className="btn btn-outline-secondary" onClick={resetForm}>
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

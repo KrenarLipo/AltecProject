@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS = [
     'social_youtube' => '',
     'homepage_promo_title' => '',
     'homepage_promo_body' => '',
+    'site_status' => 'live',
 ];
 
 function get_settings(): array {
@@ -207,4 +208,44 @@ function handle_item_images(
     }
 
     json_response(['error' => 'Not found'], 404);
+}
+
+/**
+ * Called from header.php on every public page. Shows a maintenance page and exits
+ * when the site is set to "under construction" — unless the visitor is a logged-in
+ * admin, so owners/editors can still preview the live site while it's toggled off.
+ */
+function enforce_site_status(): void {
+    if (get_setting('site_status') !== 'construction' || current_admin() !== null) {
+        return;
+    }
+
+    http_response_code(503);
+    header('Retry-After: 3600');
+    ?>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Under Construction — Altec Group</title>
+  <link rel="icon" type="image/png" href="/assets/img/altec-logo.png">
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(120deg, #ed1c24 0%, #b3161d 45%, #00a2e8 100%); font-family: "Inter", system-ui, sans-serif; padding: 1.5rem; box-sizing: border-box; }
+    .box { background: #fff; border-radius: 12px; padding: 2.5rem 2rem; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25); }
+    .box img { width: 150px; margin-bottom: 1.5rem; }
+    .box h1 { font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: 0.03em; font-size: 1.4rem; margin: 0 0 0.75rem; }
+    .box p { color: #555; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <img src="/assets/img/altec-logo.png" alt="Altec Group">
+    <h1>We'll Be Right Back</h1>
+    <p>Our website is currently undergoing maintenance. Please check back soon.</p>
+  </div>
+</body>
+</html>
+    <?php
+    exit;
 }

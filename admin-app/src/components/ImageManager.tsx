@@ -45,43 +45,48 @@ export default function ImageManager({ resource, itemId, images, onChange }: Pro
   }
 
   return (
-    <div style={{ border: "1px solid #ddd", borderRadius: 4, padding: "0.75rem", marginBottom: "0.75rem" }}>
-      <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Photos</div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginBottom: "0.6rem" }}>
-        {images.map((image) => {
-          const primary = image.isPrimary === true || image.isPrimary === 1;
-          return (
-            <div key={image.id} style={{ width: 110 }}>
-              <img
-                src={image.url}
-                alt=""
-                style={{
-                  width: 110,
-                  height: 90,
-                  objectFit: "cover",
-                  borderRadius: 4,
-                  border: primary ? "3px solid var(--color-red)" : "1px solid #ddd",
-                }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", marginTop: 2 }}>
-                {primary ? (
-                  <span style={{ color: "var(--color-red)", fontWeight: 600 }}>Thumbnail</span>
-                ) : (
-                  <button type="button" onClick={() => setPrimary(image.id)} style={{ fontSize: "0.75rem" }}>
-                    Set thumbnail
+    <div className="card shadow-sm mb-3">
+      <div className="card-body">
+        <h3 className="h6 mb-3">Photos</h3>
+        <div className="d-flex flex-wrap gap-3 mb-3">
+          {images.map((image) => {
+            const primary = image.isPrimary === true || image.isPrimary === 1;
+            return (
+              <div key={image.id} style={{ width: 120 }}>
+                <img
+                  src={image.url}
+                  alt=""
+                  className={`w-100 rounded ${primary ? "border border-3 border-primary" : "border"}`}
+                  style={{ height: 96, objectFit: "cover" }}
+                />
+                <div className="d-flex justify-content-between align-items-center mt-1">
+                  {primary ? (
+                    <span className="badge bg-primary">Thumbnail</span>
+                  ) : (
+                    <button type="button" className="btn btn-link btn-sm p-0" onClick={() => setPrimary(image.id)}>
+                      Set thumbnail
+                    </button>
+                  )}
+                  <button type="button" className="btn btn-link btn-sm text-danger p-0" onClick={() => deleteImage(image.id)}>
+                    Delete
                   </button>
-                )}
-                <button type="button" onClick={() => deleteImage(image.id)} style={{ fontSize: "0.75rem" }}>
-                  Delete
-                </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
-        {images.length === 0 && <p style={{ color: "#888", fontSize: "0.85rem" }}>No photos yet.</p>}
+            );
+          })}
+          {images.length === 0 && <p className="text-muted small mb-0">No photos yet.</p>}
+        </div>
+        <input
+          type="file"
+          className="form-control form-control-sm"
+          style={{ maxWidth: 320 }}
+          accept="image/*"
+          multiple
+          onChange={handleFiles}
+          disabled={uploading}
+        />
+        {uploading && <span className="small text-muted ms-2">Uploading...</span>}
       </div>
-      <input type="file" accept="image/*" multiple onChange={handleFiles} disabled={uploading} />
-      {uploading && <span style={{ marginLeft: "0.5rem", fontSize: "0.85rem" }}>Uploading...</span>}
     </div>
   );
 }

@@ -20,30 +20,41 @@ export default function ContactSubmissions() {
 
   return (
     <div>
-      <h1>Contact Submissions</h1>
-      {submissions.length === 0 && <p>No submissions yet.</p>}
-      <table>
-        <thead>
-          <tr>
-            <th align="left">Date</th>
-            <th align="left">Name</th>
-            <th align="left">Email</th>
-            <th align="left">Phone</th>
-            <th align="left">Message</th>
-          </tr>
-        </thead>
-        <tbody>
-          {submissions.map((submission) => (
-            <tr key={submission.id}>
-              <td>{new Date(submission.createdAt).toLocaleString()}</td>
-              <td>{submission.name}</td>
-              <td>{submission.email}</td>
-              <td>{submission.phone ?? "—"}</td>
-              <td>{submission.message}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1 className="h3 mb-4">Contact Submissions</h1>
+
+      <div className="card shadow-sm">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {submissions.map((submission) => (
+                <tr key={submission.id}>
+                  <td className="text-nowrap">{new Date(submission.createdAt).toLocaleString()}</td>
+                  <td>{submission.name}</td>
+                  <td>{submission.email}</td>
+                  <td>{submission.phone ?? "—"}</td>
+                  <td>{submission.message}</td>
+                </tr>
+              ))}
+              {submissions.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-muted text-center py-4">
+                    No submissions yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

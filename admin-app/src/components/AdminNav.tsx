@@ -1,22 +1,22 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useCurrentAdmin } from "../lib/AdminContext";
 
 const links = [
-  { href: "/", label: "Dashboard", ownerOnly: false },
-  { href: "/products", label: "Products", ownerOnly: true },
-  { href: "/categories", label: "Categories", ownerOnly: true },
-  { href: "/menu-items", label: "Menu", ownerOnly: true },
-  { href: "/slides", label: "Slideshow", ownerOnly: true },
-  { href: "/works", label: "Works", ownerOnly: false },
-  { href: "/news", label: "News", ownerOnly: false },
-  { href: "/pages", label: "Pages", ownerOnly: true },
-  { href: "/settings", label: "Settings", ownerOnly: true },
-  { href: "/contact-submissions", label: "Contact Submissions", ownerOnly: true },
-  { href: "/users", label: "Users", ownerOnly: true },
+  { href: "/", label: "Dashboard", ownerOnly: false, end: true },
+  { href: "/products", label: "Products", ownerOnly: true, end: false },
+  { href: "/categories", label: "Categories", ownerOnly: true, end: false },
+  { href: "/menu-items", label: "Menu", ownerOnly: true, end: false },
+  { href: "/slides", label: "Slideshow", ownerOnly: true, end: false },
+  { href: "/works", label: "Works", ownerOnly: false, end: false },
+  { href: "/news", label: "News", ownerOnly: false, end: false },
+  { href: "/pages", label: "Pages", ownerOnly: true, end: false },
+  { href: "/settings", label: "Settings", ownerOnly: true, end: false },
+  { href: "/contact-submissions", label: "Contact Submissions", ownerOnly: true, end: false },
+  { href: "/users", label: "Users", ownerOnly: true, end: false },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   const navigate = useNavigate();
   const admin = useCurrentAdmin();
 
@@ -26,29 +26,45 @@ export default function AdminNav() {
   }
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.4rem",
-        borderRight: "1px solid #ddd",
-        borderTop: "3px solid var(--color-red)",
-        padding: "1rem",
-        minWidth: 210,
-      }}
-    >
-      <img src="/admin/altec-logo.png" alt="Altec Group" style={{ width: 130, marginBottom: "1rem" }} />
-      {links
-        .filter((link) => !link.ownerOnly || admin.role === "OWNER")
-        .map((link) => (
-          <Link key={link.href} to={link.href} style={{ padding: "0.35rem 0", fontWeight: 500 }}>
-            {link.label}
-          </Link>
-        ))}
-      <p style={{ marginTop: "1rem", fontSize: "0.8rem", color: "#888" }}>
-        {admin.name ?? admin.email} · {admin.role === "OWNER" ? "Administrator" : "Editor"}
-      </p>
-      <button onClick={handleLogout}>Log out</button>
+    <nav className={`admin-sidebar d-flex flex-column bg-white border-end p-3 ${open ? "open" : ""}`}>
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <img src="/admin/altec-logo.png" alt="Altec Group" style={{ width: 130 }} />
+        <button
+          type="button"
+          className="btn-close d-lg-none"
+          aria-label="Close menu"
+          onClick={onNavigate}
+        />
+      </div>
+
+      <div className="d-flex flex-column gap-1 flex-grow-1">
+        {links
+          .filter((link) => !link.ownerOnly || admin.role === "OWNER")
+          .map((link) => (
+            <NavLink
+              key={link.href}
+              to={link.href}
+              end={link.end}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                `nav-link px-3 py-2 rounded ${isActive ? "bg-primary text-white" : "text-dark"}`
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+      </div>
+
+      <div className="mt-3 pt-3 border-top">
+        <p className="small text-muted mb-2">
+          {admin.name ?? admin.email}
+          <br />
+          <span className="badge bg-primary mt-1">{admin.role === "OWNER" ? "Administrator" : "Editor"}</span>
+        </p>
+        <button type="button" className="btn btn-outline-secondary btn-sm w-100" onClick={handleLogout}>
+          Log out
+        </button>
+      </div>
     </nav>
   );
 }

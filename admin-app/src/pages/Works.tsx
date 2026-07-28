@@ -87,89 +87,137 @@ export default function Works() {
 
   return (
     <div>
-      <h1>Works</h1>
+      <h1 className="h3 mb-4">Works</h1>
 
-      <table style={{ marginBottom: "1.5rem" }}>
-        <thead>
-          <tr>
-            <th align="left">Title (EN)</th>
-            <th align="left">Type</th>
-            <th align="left">Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
-              <td>{item.projectType ?? "—"}</td>
-              <td>{item.date ? item.date.slice(0, 10) : "—"}</td>
-              <td>
-                <button onClick={() => startEdit(item)}>Edit</button>{" "}
-                <button onClick={() => handleDelete(item.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2>{editingId ? "Edit Work" : "Add Work"}</h2>
-
-      {editingItem && (
-        <ImageManager resource="works" itemId={editingItem.id} images={editingItem.images} onChange={load} />
-      )}
-      {!editingId && (
-        <p style={{ color: "#888", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
-          Save the project first, then photos can be added while editing it.
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 480 }}>
-        <label>
-          Project Type
-          <input
-            value={form.projectType}
-            onChange={(e) => setForm({ ...form, projectType: e.target.value })}
-            placeholder="villa, apartment, HVAC..."
-          />
-        </label>
-        <label>
-          Date
-          <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-        </label>
-        <label>
-          Title (English)
-          <input value={form.titleEn} onChange={(e) => setForm({ ...form, titleEn: e.target.value })} required />
-        </label>
-        <label>
-          Description (English)
-          <textarea value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} />
-        </label>
-        <label>
-          Title (Italian)
-          <input value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
-        </label>
-        <label>
-          Description (Italian)
-          <textarea value={form.descriptionIt} onChange={(e) => setForm({ ...form, descriptionIt: e.target.value })} />
-        </label>
-        <label>
-          Title (Albanian)
-          <input value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
-        </label>
-        <label>
-          Description (Albanian)
-          <textarea value={form.descriptionAl} onChange={(e) => setForm({ ...form, descriptionAl: e.target.value })} />
-        </label>
-        <div>
-          <button type="submit">{editingId ? "Save" : "Add"}</button>{" "}
-          {editingId && (
-            <button type="button" onClick={resetForm}>
-              Cancel
-            </button>
-          )}
+      <div className="card shadow-sm mb-4">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Title (EN)</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th className="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
+                  <td>{item.projectType ?? "—"}</td>
+                  <td>{item.date ? item.date.slice(0, 10) : "—"}</td>
+                  <td className="text-end">
+                    <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => startEdit(item)}>
+                      Edit
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(item.id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {items.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="text-muted text-center py-4">
+                    No works yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </form>
+      </div>
+
+      <h2 className="h5 mb-3">{editingId ? "Edit Work" : "Add Work"}</h2>
+
+      {editingItem && <ImageManager resource="works" itemId={editingItem.id} images={editingItem.images} onChange={load} />}
+      {!editingId && <p className="text-muted small">Save the project first, then photos can be added while editing it.</p>}
+
+      <div className="card shadow-sm" style={{ maxWidth: 640 }}>
+        <div className="card-body">
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-12 col-md-6">
+                <label className="form-label">Project Type</label>
+                <input
+                  className="form-control"
+                  value={form.projectType}
+                  onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                  placeholder="villa, apartment, HVAC..."
+                />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                />
+              </div>
+
+              <div className="col-12">
+                <hr />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (English)</label>
+                <input
+                  className="form-control"
+                  value={form.titleEn}
+                  onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Description (English)</label>
+                <textarea
+                  className="form-control"
+                  value={form.descriptionEn}
+                  onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
+                />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Italian)</label>
+                <input className="form-control" value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Description (Italian)</label>
+                <textarea
+                  className="form-control"
+                  value={form.descriptionIt}
+                  onChange={(e) => setForm({ ...form, descriptionIt: e.target.value })}
+                />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Albanian)</label>
+                <input className="form-control" value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Description (Albanian)</label>
+                <textarea
+                  className="form-control"
+                  value={form.descriptionAl}
+                  onChange={(e) => setForm({ ...form, descriptionAl: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="d-flex gap-2 mt-4">
+              <button type="submit" className="btn bg-primary text-white">
+                {editingId ? "Save" : "Add"}
+              </button>
+              {editingId && (
+                <button type="button" className="btn btn-outline-secondary" onClick={resetForm}>
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

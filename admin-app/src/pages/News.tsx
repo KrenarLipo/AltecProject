@@ -87,84 +87,144 @@ export default function News() {
 
   return (
     <div>
-      <h1>News</h1>
+      <h1 className="h3 mb-4">News</h1>
 
-      <table style={{ marginBottom: "1.5rem" }}>
-        <thead>
-          <tr>
-            <th align="left">Title (EN)</th>
-            <th align="left">Slug</th>
-            <th align="left">Published</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {posts.map((post) => (
-            <tr key={post.id}>
-              <td>{post.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
-              <td>{post.slug}</td>
-              <td>{post.publishedAt ? post.publishedAt.slice(0, 10) : "—"}</td>
-              <td>
-                <button onClick={() => startEdit(post)}>Edit</button>{" "}
-                <button onClick={() => handleDelete(post.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2>{editingId ? "Edit News Post" : "Add News Post"}</h2>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 480 }}>
-        <label>
-          Slug
-          <input
-            value={form.slug}
-            onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            placeholder="new-showroom-opening"
-            required
-          />
-        </label>
-        <label>
-          Cover Image URL
-          <input value={form.coverImage} onChange={(e) => setForm({ ...form, coverImage: e.target.value })} />
-        </label>
-        <label>
-          Published Date
-          <input type="date" value={form.publishedAt} onChange={(e) => setForm({ ...form, publishedAt: e.target.value })} />
-        </label>
-        <label>
-          Title (English)
-          <input value={form.titleEn} onChange={(e) => setForm({ ...form, titleEn: e.target.value })} required />
-        </label>
-        <label>
-          Body (English)
-          <textarea value={form.bodyEn} onChange={(e) => setForm({ ...form, bodyEn: e.target.value })} rows={5} />
-        </label>
-        <label>
-          Title (Italian)
-          <input value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
-        </label>
-        <label>
-          Body (Italian)
-          <textarea value={form.bodyIt} onChange={(e) => setForm({ ...form, bodyIt: e.target.value })} rows={5} />
-        </label>
-        <label>
-          Title (Albanian)
-          <input value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
-        </label>
-        <label>
-          Body (Albanian)
-          <textarea value={form.bodyAl} onChange={(e) => setForm({ ...form, bodyAl: e.target.value })} rows={5} />
-        </label>
-        <div>
-          <button type="submit">{editingId ? "Save" : "Add"}</button>{" "}
-          {editingId && (
-            <button type="button" onClick={resetForm}>
-              Cancel
-            </button>
-          )}
+      <div className="card shadow-sm mb-4">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Title (EN)</th>
+                <th>Slug</th>
+                <th>Published</th>
+                <th className="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.map((post) => (
+                <tr key={post.id}>
+                  <td>{post.translations.find((t) => t.languageCode === "en")?.title ?? "—"}</td>
+                  <td>{post.slug}</td>
+                  <td>{post.publishedAt ? post.publishedAt.slice(0, 10) : "—"}</td>
+                  <td className="text-end">
+                    <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => startEdit(post)}>
+                      Edit
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(post.id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {posts.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="text-muted text-center py-4">
+                    No posts yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </form>
+      </div>
+
+      <div className="card shadow-sm" style={{ maxWidth: 640 }}>
+        <div className="card-body">
+          <h2 className="h5 mb-3">{editingId ? "Edit News Post" : "Add News Post"}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-12 col-md-6">
+                <label className="form-label">Slug</label>
+                <input
+                  className="form-control"
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder="new-showroom-opening"
+                  required
+                />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Published Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={form.publishedAt}
+                  onChange={(e) => setForm({ ...form, publishedAt: e.target.value })}
+                />
+              </div>
+              <div className="col-12">
+                <label className="form-label">Cover Image URL</label>
+                <input
+                  className="form-control"
+                  value={form.coverImage}
+                  onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
+                />
+              </div>
+
+              <div className="col-12">
+                <hr />
+              </div>
+
+              <div className="col-12">
+                <label className="form-label">Title (English)</label>
+                <input
+                  className="form-control"
+                  value={form.titleEn}
+                  onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="col-12">
+                <label className="form-label">Body (English)</label>
+                <textarea
+                  className="form-control"
+                  rows={5}
+                  value={form.bodyEn}
+                  onChange={(e) => setForm({ ...form, bodyEn: e.target.value })}
+                />
+              </div>
+
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Italian)</label>
+                <input className="form-control" value={form.titleIt} onChange={(e) => setForm({ ...form, titleIt: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Title (Albanian)</label>
+                <input className="form-control" value={form.titleAl} onChange={(e) => setForm({ ...form, titleAl: e.target.value })} />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Body (Italian)</label>
+                <textarea
+                  className="form-control"
+                  rows={5}
+                  value={form.bodyIt}
+                  onChange={(e) => setForm({ ...form, bodyIt: e.target.value })}
+                />
+              </div>
+              <div className="col-12 col-md-6">
+                <label className="form-label">Body (Albanian)</label>
+                <textarea
+                  className="form-control"
+                  rows={5}
+                  value={form.bodyAl}
+                  onChange={(e) => setForm({ ...form, bodyAl: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="d-flex gap-2 mt-4">
+              <button type="submit" className="btn bg-primary text-white">
+                {editingId ? "Save" : "Add"}
+              </button>
+              {editingId && (
+                <button type="button" className="btn btn-outline-secondary" onClick={resetForm}>
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
