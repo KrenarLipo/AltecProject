@@ -29,7 +29,10 @@ parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery
     <a class="brand" href="/">
       <img src="/assets/img/altec-logo.png" alt="Altec Group" width="150" height="83">
     </a>
-    <nav class="main-nav">
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav" id="main-nav">
       <ul>
         <?php foreach ($menu as $item): ?>
           <li>
@@ -57,4 +60,5 @@ parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery
     </div>
   </div>
 </header>
+<script src="/assets/js/site.js" defer></script>
 <main>

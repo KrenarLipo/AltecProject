@@ -81,6 +81,7 @@ require __DIR__ . '/includes/header.php';
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
+  <button class="scroll-cue" aria-label="Scroll down">&#8595;</button>
 </section>
 <script src="/assets/js/slideshow.js" defer></script>
 <?php else: ?>
@@ -91,25 +92,26 @@ require __DIR__ . '/includes/header.php';
     <p><?= h($settings['homepage_promo_body'] ?: 'Altec provides AC sales and installation, reconstruction, and home furnishing services across Albania.') ?></p>
     <a class="btn btn-outline" href="/ac-sales-installation">Explore AC Solutions</a>
   </div>
+  <button class="scroll-cue" aria-label="Scroll down">&#8595;</button>
 </section>
 <?php endif; ?>
 
 <section class="section">
   <div class="container">
     <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-      <div class="card">
+      <div class="card reveal">
         <span class="eyebrow">Primary Service</span>
         <h3>AC Sales &amp; Installation</h3>
         <p>Residential and commercial air conditioning, sold and installed by our team — including Viessmann systems.</p>
         <a href="/ac-sales-installation">See products &rarr;</a>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <span class="eyebrow">Also Offered</span>
         <h3>Reconstruction &amp; Furnishing</h3>
         <p>Renovation and home furnishing services for clients who need more than just climate control.</p>
         <a href="/reconstruction-furnishing">Learn more &rarr;</a>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <span class="eyebrow">Partnership</span>
         <h3>Viessmann Partner</h3>
         <p>Altec is a Viessmann collaborator, bringing certified heating and cooling systems to Albanian homes.</p>
@@ -121,7 +123,7 @@ require __DIR__ . '/includes/header.php';
 
 <section class="section section-alt">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Featured Products</h2>
       <a class="link-more" href="/ac-sales-installation">See all AC products &rarr;</a>
     </div>
@@ -134,7 +136,7 @@ require __DIR__ . '/includes/header.php';
           $productImageStmt->execute([$product['id']]);
           $productImage = $productImageStmt->fetchColumn();
           ?>
-          <div class="card">
+          <div class="card reveal">
             <?php if ($productImage): ?>
               <img src="<?= h($productImage) ?>" alt="<?= h($product['name']) ?>" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); margin-bottom: 0.8rem;">
             <?php endif; ?>
@@ -149,7 +151,7 @@ require __DIR__ . '/includes/header.php';
 
 <section class="section">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Recent News</h2>
       <a class="link-more" href="/news">All news &rarr;</a>
     </div>
@@ -158,7 +160,7 @@ require __DIR__ . '/includes/header.php';
     <?php else: ?>
       <ul class="card-list">
         <?php foreach ($recentNews as $post): ?>
-          <li><a href="/news/<?= h($post['slug']) ?>"><?= h($post['title']) ?></a></li>
+          <li class="reveal"><a href="/news/<?= h($post['slug']) ?>"><?= h($post['title']) ?></a></li>
         <?php endforeach; ?>
       </ul>
     <?php endif; ?>
@@ -171,7 +173,7 @@ require __DIR__ . '/includes/header.php';
     <h2><?= h($partnersPage['title'] ?? 'Partners') ?></h2>
     <p style="white-space: pre-wrap; font-size: 1.05rem;"><?= h($partnersPage['body'] ?? 'Content coming soon.') ?></p>
 
-    <div class="card" style="margin-top: 1.5rem;">
+    <div class="card reveal" style="margin-top: 1.5rem;">
       <span class="brand-tag">Certified Partner</span>
       <h3>Viessmann</h3>
       <p>Altec is a Viessmann collaborator, offering Viessmann's heating, cooling, and heat pump systems as part of our AC sales and installation service.</p>
