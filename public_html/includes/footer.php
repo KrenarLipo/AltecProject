@@ -16,6 +16,11 @@ $footerMenu = get_menu_tree($lang ?? current_lang(), 'FOOTER');
       <?php if ($settings['contact_phone']): ?><p>Tel: <?= h($settings['contact_phone']) ?></p><?php endif; ?>
       <?php if ($settings['contact_email']): ?><p>Email: <?= h($settings['contact_email']) ?></p><?php endif; ?>
       <?php if ($settings['contact_address']): ?><p><?= h($settings['contact_address']) ?></p><?php endif; ?>
+      <?php if ($currentAdmin = current_admin()): ?>
+        <p><a href="/account.php"><?= h($currentAdmin['name'] ?? 'My Account') ?></a></p>
+      <?php else: ?>
+        <p><a href="/login.php">Login / Register</a></p>
+      <?php endif; ?>
     </div>
     <?php if (!empty($footerMenu)): ?>
       <div>
