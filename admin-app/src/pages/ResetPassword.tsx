@@ -41,7 +41,9 @@ export default function ResetPassword() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        <a href="/" title="Back to website">
+          <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        </a>
         <h1 className="auth-title">Reset Password</h1>
         <p className="auth-subtitle">Choose a new password for your account</p>
 

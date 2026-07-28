@@ -28,7 +28,9 @@ export default function ForgotPassword() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        <a href="/" title="Back to website">
+          <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        </a>
         <h1 className="auth-title">Forgot Password</h1>
         <p className="auth-subtitle">We'll email you a link to reset it</p>
 

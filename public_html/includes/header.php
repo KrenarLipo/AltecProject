@@ -25,9 +25,30 @@ parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery
 </head>
 <body>
 <header class="site-header">
-  <div class="container">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="lang-switch">
+        <?php foreach ($languageLabels as $code => $info): ?>
+          <?php $query = array_merge($currentQuery, ['lang' => $code]); ?>
+          <a href="<?= h($currentPath . '?' . http_build_query($query)) ?>"
+             class="<?= $code === $lang ? 'active' : '' ?>"
+             title="<?= h($info['name']) ?>" aria-label="<?= h($info['name']) ?>">
+            <span class="flag" aria-hidden="true"><?= $info['flag'] ?></span>
+          </a>
+        <?php endforeach; ?>
+      </div>
+      <div class="account-switch">
+        <?php if ($currentAdmin = current_admin()): ?>
+          <a href="/account.php"><?= h($currentAdmin['name'] ?? 'My Account') ?></a>
+        <?php else: ?>
+          <a href="/login.php">Login / Register</a>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+  <div class="container main-row">
     <a class="brand" href="/">
-      <img src="/assets/img/altec-logo.png" alt="Altec Group" width="150" height="83">
+      <img src="/assets/img/altec-logo.png" alt="Altec Group" width="200" height="111">
     </a>
     <nav class="main-nav">
       <ul>
@@ -45,23 +66,6 @@ parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery
         <?php endforeach; ?>
       </ul>
     </nav>
-    <div class="lang-switch">
-      <?php foreach ($languageLabels as $code => $info): ?>
-        <?php $query = array_merge($currentQuery, ['lang' => $code]); ?>
-        <a href="<?= h($currentPath . '?' . http_build_query($query)) ?>"
-           class="<?= $code === $lang ? 'active' : '' ?>"
-           title="<?= h($info['name']) ?>" aria-label="<?= h($info['name']) ?>">
-          <span class="flag" aria-hidden="true"><?= $info['flag'] ?></span>
-        </a>
-      <?php endforeach; ?>
-    </div>
-    <div class="account-switch">
-      <?php if ($currentAdmin = current_admin()): ?>
-        <a href="/account.php"><?= h($currentAdmin['name'] ?? 'My Account') ?></a>
-      <?php else: ?>
-        <a href="/login.php">Login / Register</a>
-      <?php endif; ?>
-    </div>
   </div>
 </header>
 <main>

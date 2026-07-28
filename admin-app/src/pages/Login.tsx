@@ -30,7 +30,9 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        <a href="/" title="Back to website">
+          <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+        </a>
         <h1 className="auth-title">Admin Login</h1>
         <p className="auth-subtitle">Sign in to manage the Altec website</p>
         <form onSubmit={handleSubmit} className="auth-form">
