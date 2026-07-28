@@ -17,7 +17,7 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="section">
-  <div class="container" style="max-width: 760px;">
+  <div class="container reveal" style="max-width: 760px;">
     <span class="eyebrow">Altec Group</span>
     <h1><?= h($page['title'] ?? 'About Us') ?></h1>
     <p style="white-space: pre-wrap; font-size: 1.05rem;"><?= h($page['body'] ?? 'Content coming soon.') ?></p>

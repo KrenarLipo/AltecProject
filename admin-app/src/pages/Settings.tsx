@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { api } from "../lib/api";
 
 const fields: { key: string; label: string }[] = [
@@ -17,6 +17,7 @@ const fields: { key: string; label: string }[] = [
 export default function Settings() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     api.get<Record<string, string>>("/settings").then(setValues);
@@ -29,7 +30,21 @@ export default function Settings() {
     setTimeout(() => setSaved(false), 2000);
   }
 
+  async function handleVideoUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { url } = await api.upload<{ url: string }>("/uploads", file);
+      setValues((v) => ({ ...v, login_video_upload_url: url }));
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
+  }
+
   const underConstruction = values.site_status === "construction";
+  const loginVideoType = values.login_video_type === "upload" ? "upload" : "youtube";
 
   return (
     <div>
@@ -61,6 +76,71 @@ export default function Settings() {
               )}
             </label>
           </div>
+        </div>
+      </div>
+
+      <div className="card shadow-sm mb-4" style={{ maxWidth: 640 }}>
+        <div className="card-body">
+          <h2 className="h5 mb-2">Admin Login Video</h2>
+          <p className="text-muted small mb-3">
+            The video shown on the left side of the admin login screen (/admin/login).
+          </p>
+
+          <div className="d-flex gap-3 mb-3">
+            <div className="form-check">
+              <input
+                type="radio"
+                className="form-check-input"
+                id="video-type-youtube"
+                name="login_video_type"
+                checked={loginVideoType === "youtube"}
+                onChange={() => setValues({ ...values, login_video_type: "youtube" })}
+              />
+              <label className="form-check-label" htmlFor="video-type-youtube">
+                YouTube link
+              </label>
+            </div>
+            <div className="form-check">
+              <input
+                type="radio"
+                className="form-check-input"
+                id="video-type-upload"
+                name="login_video_type"
+                checked={loginVideoType === "upload"}
+                onChange={() => setValues({ ...values, login_video_type: "upload" })}
+              />
+              <label className="form-check-label" htmlFor="video-type-upload">
+                Uploaded video
+              </label>
+            </div>
+          </div>
+
+          {loginVideoType === "youtube" ? (
+            <div>
+              <label className="form-label">YouTube URL</label>
+              <input
+                className="form-control"
+                value={values.login_video_youtube_url ?? ""}
+                onChange={(e) => setValues({ ...values, login_video_youtube_url: e.target.value })}
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+            </div>
+          ) : (
+            <div>
+              <label className="form-label">Upload video</label>
+              <input type="file" className="form-control" accept="video/*" onChange={handleVideoUpload} disabled={uploading} />
+              {uploading && <span className="small text-muted">Uploading...</span>}
+              {values.login_video_upload_url && (
+                <video
+                  src={values.login_video_upload_url}
+                  className="rounded border mt-2"
+                  style={{ maxWidth: 260 }}
+                  muted
+                  controls
+                />
+              )}
+            </div>
+          )}
         </div>
       </div>
 

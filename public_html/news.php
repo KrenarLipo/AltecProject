@@ -28,7 +28,7 @@ if ($slug !== null) {
     require __DIR__ . '/includes/header.php';
     ?>
     <section class="section">
-      <div class="container" style="max-width: 760px;">
+      <div class="container reveal" style="max-width: 760px;">
         <article>
           <span class="eyebrow"><?= h(date('F j, Y', strtotime($post['publishedAt']))) ?></span>
           <h1><?= h($post['title']) ?></h1>
@@ -70,7 +70,7 @@ require __DIR__ . '/includes/header.php';
     <?php else: ?>
       <ul class="card-list">
         <?php foreach ($posts as $post): ?>
-          <li><a href="/news/<?= h($post['slug']) ?>"><?= h($post['title']) ?></a></li>
+          <li class="reveal"><a href="/news/<?= h($post['slug']) ?>"><?= h($post['title']) ?></a></li>
         <?php endforeach; ?>
       </ul>
     <?php endif; ?>

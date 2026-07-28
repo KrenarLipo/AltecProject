@@ -37,7 +37,7 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <section class="section">
-  <div class="container" style="max-width: 620px;">
+  <div class="container reveal" style="max-width: 620px;">
     <?php if ($settings['contact_phone'] || $settings['contact_email'] || $settings['contact_address']): ?>
       <ul class="info-list">
         <?php if ($settings['contact_phone']): ?><li>Tel: <?= h($settings['contact_phone']) ?></li><?php endif; ?>

@@ -1,13 +1,131 @@
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap");
 
-.auth-page {
+.auth-shell {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.auth-brand-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.5rem;
+  background: #fff;
+  border-bottom: 3px solid #ed1c24;
+  flex-shrink: 0;
+}
+.auth-brand-bar img {
+  height: 32px;
+  width: auto;
+}
+.auth-brand-bar span {
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1c1c1c;
+}
+
+.auth-brand-footer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0.6rem;
+  font-size: 0.75rem;
+  color: #999;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.auth-page {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   background: linear-gradient(120deg, #ed1c24 0%, #b3161d 45%, #00a2e8 100%);
-  font-family: "Inter", system-ui, sans-serif;
+}
+
+.auth-split {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.auth-video-panel {
+  position: relative;
+  flex: 1.2;
+  overflow: hidden;
+  background: #1c1c1c;
+  display: flex;
+  align-items: flex-end;
+}
+.auth-video-panel iframe,
+.auth-video-panel video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+.auth-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(237, 28, 36, 0.35) 0%, rgba(0, 162, 232, 0.35) 100%),
+    linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 45%);
+  pointer-events: none;
+}
+.auth-video-caption {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  padding: 2.5rem;
+}
+.auth-video-caption .eyebrow {
+  display: block;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.85;
+  margin-bottom: 0.5rem;
+}
+.auth-video-caption h2 {
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.5rem;
+  max-width: 24rem;
+}
+.auth-video-caption p {
+  max-width: 24rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  overflow-y: auto;
+}
+
+@media (max-width: 860px) {
+  .auth-split { flex-direction: column; }
+  .auth-video-panel { flex: none; height: 220px; }
+  .auth-video-caption { padding: 1.25rem; }
+  .auth-video-caption h2 { font-size: 1.3rem; }
+  .auth-video-caption p { display: none; }
 }
 
 .auth-card {
@@ -19,15 +137,6 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
-.auth-card > a {
-  display: block;
-}
-
-.auth-logo {
-  display: block;
-  width: 140px;
-  margin: 0 auto 1.5rem;
-}
 
 .auth-title {
   font-family: "Oswald", "Arial Narrow", sans-serif;

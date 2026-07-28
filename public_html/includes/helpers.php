@@ -25,6 +25,9 @@ const DEFAULT_SETTINGS = [
     'homepage_promo_title' => '',
     'homepage_promo_body' => '',
     'site_status' => 'live',
+    'login_video_type' => 'youtube',
+    'login_video_youtube_url' => 'https://www.youtube.com/watch?v=BD_K6ylDt44',
+    'login_video_upload_url' => '',
 ];
 
 function get_settings(): array {

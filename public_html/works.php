@@ -32,7 +32,7 @@ if ($id !== null) {
     require __DIR__ . '/includes/header.php';
     ?>
     <section class="section">
-      <div class="container" style="max-width: 900px;">
+      <div class="container reveal" style="max-width: 900px;">
         <a href="/works" class="link-more">&larr; All works</a>
         <?php if ($project['projectType']): ?><span class="brand-tag" style="margin-top:1rem;"><?= h($project['projectType']) ?></span><?php endif; ?>
         <h1><?= h($project['title']) ?></h1>
@@ -87,7 +87,7 @@ require __DIR__ . '/includes/header.php';
           $imageStmt->execute([$item['id']]);
           $thumbnail = $imageStmt->fetchColumn();
           ?>
-          <a class="card" href="/works/<?= (int) $item['id'] ?>" style="display: block; color: inherit;">
+          <a class="card reveal" href="/works/<?= (int) $item['id'] ?>" style="display: block; color: inherit;">
             <?php if ($thumbnail): ?>
               <img src="<?= h($thumbnail) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); margin-bottom: 0.8rem;">
             <?php endif; ?>

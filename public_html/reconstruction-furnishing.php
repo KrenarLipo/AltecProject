@@ -32,7 +32,7 @@ require __DIR__ . '/includes/header.php';
     <?php else: ?>
       <div class="grid">
         <?php foreach ($categories as $category): ?>
-          <div class="card">
+          <div class="card reveal">
             <h3><?= h($category['name']) ?></h3>
           </div>
         <?php endforeach; ?>

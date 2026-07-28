@@ -43,7 +43,7 @@ require __DIR__ . '/includes/header.php';
       <p>No categories yet.</p>
     <?php endif; ?>
     <?php foreach ($categories as $category): ?>
-      <div style="margin-bottom: 3rem;">
+      <div class="reveal" style="margin-bottom: 3rem;">
         <h2><?= h($category['name']) ?></h2>
         <?php
         $productStmt->execute([$lang, $category['id']]);
@@ -58,7 +58,7 @@ require __DIR__ . '/includes/header.php';
               $imageStmt->execute([$product['id']]);
               $image = $imageStmt->fetchColumn();
               ?>
-              <div class="card">
+              <div class="card reveal">
                 <?php if ($image): ?>
                   <img src="<?= h($image) ?>" alt="<?= h($product['name']) ?>" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); margin-bottom: 0.8rem;">
                 <?php endif; ?>

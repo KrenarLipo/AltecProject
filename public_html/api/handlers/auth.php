@@ -52,6 +52,15 @@ if ($sub === 'logout' && $method === 'POST') {
     json_response(['ok' => true]);
 }
 
+if ($sub === 'login-page' && $method === 'GET') {
+    // Public — the login screen needs this before anyone is authenticated.
+    json_response([
+        'videoType' => get_setting('login_video_type') ?: 'youtube',
+        'youtubeUrl' => get_setting('login_video_youtube_url'),
+        'uploadUrl' => get_setting('login_video_upload_url'),
+    ]);
+}
+
 if ($sub === 'me' && $method === 'GET') {
     $admin = current_admin();
     if (!$admin) {

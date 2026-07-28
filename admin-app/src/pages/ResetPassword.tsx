@@ -39,39 +39,47 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <a href="/" title="Back to website">
-          <img className="auth-logo" src="/admin/altec-logo.png" alt="Altec Group" />
+    <div className="auth-shell">
+      <header className="auth-brand-bar">
+        <a href="/" title="Back to website" className="d-flex align-items-center gap-2 text-decoration-none">
+          <img src="/admin/altec-logo.png" alt="Altec Group" />
+          <span>Altec Group — Admin</span>
         </a>
-        <h1 className="auth-title">Reset Password</h1>
-        <p className="auth-subtitle">Choose a new password for your account</p>
+      </header>
 
-        {!token ? (
-          <p className="auth-error">This reset link is missing its token. Please request a new one.</p>
-        ) : done ? (
-          <p className="auth-success">Your password has been reset. You can now sign in.</p>
-        ) : (
-          <form onSubmit={handleSubmit} className="auth-form">
-            <label className="auth-field">
-              New password
-              <input name="password" type="password" autoComplete="new-password" required minLength={8} />
-            </label>
-            <label className="auth-field">
-              Confirm password
-              <input name="confirm" type="password" autoComplete="new-password" required minLength={8} />
-            </label>
-            {error && <p className="auth-error">{error}</p>}
-            <button type="submit" className="auth-submit" disabled={submitting}>
-              {submitting ? "Saving..." : "Set new password"}
-            </button>
-          </form>
-        )}
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1 className="auth-title">Reset Password</h1>
+          <p className="auth-subtitle">Choose a new password for your account</p>
 
-        <div className="auth-links centered">
-          <Link to="/login">Back to login</Link>
+          {!token ? (
+            <p className="auth-error">This reset link is missing its token. Please request a new one.</p>
+          ) : done ? (
+            <p className="auth-success">Your password has been reset. You can now sign in.</p>
+          ) : (
+            <form onSubmit={handleSubmit} className="auth-form">
+              <label className="auth-field">
+                New password
+                <input name="password" type="password" autoComplete="new-password" required minLength={8} />
+              </label>
+              <label className="auth-field">
+                Confirm password
+                <input name="confirm" type="password" autoComplete="new-password" required minLength={8} />
+              </label>
+              {error && <p className="auth-error">{error}</p>}
+              <button type="submit" className="auth-submit" disabled={submitting}>
+                {submitting ? "Saving..." : "Set new password"}
+              </button>
+            </form>
+          )}
+
+          <div className="auth-links centered">
+            <Link to="/login">Back to login</Link>
+          </div>
         </div>
       </div>
+
+      <footer className="auth-brand-footer">Part of Altec Group — {new Date().getFullYear()}</footer>
     </div>
   );
 }
