@@ -1,31 +1,39 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
+import { useCurrentAdmin } from "../lib/AdminContext";
 
 type Counts = {
-  products: number;
+  products?: number;
   works: number;
   news: number;
-  unreadSubmissions: number;
+  unreadSubmissions?: number;
 };
 
 export default function Dashboard() {
+  const admin = useCurrentAdmin();
   const [counts, setCounts] = useState<Counts | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      api.get<unknown[]>("/products"),
-      api.get<unknown[]>("/works"),
-      api.get<unknown[]>("/news"),
-      api.get<{ read: boolean }[]>("/contact"),
-    ]).then(([products, works, news, submissions]) => {
-      setCounts({
-        products: products.length,
-        works: works.length,
-        news: news.length,
-        unreadSubmissions: submissions.filter((s) => !s.read).length,
+    if (admin.role === "OWNER") {
+      Promise.all([
+        api.get<unknown[]>("/products"),
+        api.get<unknown[]>("/works"),
+        api.get<unknown[]>("/news"),
+        api.get<{ read: boolean }[]>("/contact"),
+      ]).then(([products, works, news, submissions]) => {
+        setCounts({
+          products: products.length,
+          works: works.length,
+          news: news.length,
+          unreadSubmissions: submissions.filter((s) => !s.read).length,
+        });
       });
-    });
-  }, []);
+    } else {
+      Promise.all([api.get<unknown[]>("/works"), api.get<unknown[]>("/news")]).then(([works, news]) => {
+        setCounts({ works: works.length, news: news.length });
+      });
+    }
+  }, [admin.role]);
 
   return (
     <div>
@@ -33,10 +41,12 @@ export default function Dashboard() {
       {!counts && <p>Loading...</p>}
       {counts && (
         <ul>
-          <li>Products: {counts.products}</li>
+          {counts.products !== undefined && <li>Products: {counts.products}</li>}
           <li>Works: {counts.works}</li>
           <li>News posts: {counts.news}</li>
-          <li>Unread contact submissions: {counts.unreadSubmissions}</li>
+          {counts.unreadSubmissions !== undefined && (
+            <li>Unread contact submissions: {counts.unreadSubmissions}</li>
+          )}
         </ul>
       )}
     </div>

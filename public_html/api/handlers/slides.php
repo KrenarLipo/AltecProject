@@ -1,5 +1,5 @@
 <?php
-require_admin();
+require_owner();
 
 if ($method === 'GET' && $sub === null) {
     $slides = $pdo->query('SELECT * FROM Slide ORDER BY sortOrder ASC')->fetchAll();

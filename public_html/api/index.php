@@ -20,6 +20,7 @@ $pdo = get_pdo();
 
 $handlers = [
     'auth' => 'auth.php',
+    'admin-users' => 'admin-users.php',
     'categories' => 'categories.php',
     'products' => 'products.php',
     'menu-items' => 'menu-items.php',

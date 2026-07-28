@@ -1,5 +1,5 @@
 <?php
-require_admin();
+require_owner();
 
 if ($method === 'GET' && $sub === null) {
     $pages = $pdo->query('SELECT * FROM Page ORDER BY id ASC')->fetchAll();

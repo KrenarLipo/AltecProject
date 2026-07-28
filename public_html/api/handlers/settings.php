@@ -1,5 +1,5 @@
 <?php
-require_admin();
+require_owner();
 
 if ($method === 'GET') {
     json_response(get_settings());

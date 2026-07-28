@@ -17,7 +17,9 @@ function attempt_login(string $email, string $password): ?array {
 
 function login_session(array $user): void {
     $_SESSION['admin_id'] = (int) $user['id'];
+    $_SESSION['admin_name'] = $user['name'];
     $_SESSION['admin_email'] = $user['email'];
+    $_SESSION['admin_role'] = $user['role'];
 }
 
 function logout_session(): void {
@@ -31,7 +33,9 @@ function current_admin(): ?array {
     }
     return [
         'id' => $_SESSION['admin_id'],
+        'name' => $_SESSION['admin_name'],
         'email' => $_SESSION['admin_email'],
+        'role' => $_SESSION['admin_role'],
     ];
 }
 
@@ -39,6 +43,17 @@ function current_admin(): ?array {
 function require_admin(): void {
     if (current_admin() === null) {
         json_response(['error' => 'Unauthorized'], 401);
+    }
+}
+
+/** Sends a 403 JSON response and exits unless the logged-in admin is an OWNER (Administrator). */
+function require_owner(): void {
+    $admin = current_admin();
+    if ($admin === null) {
+        json_response(['error' => 'Unauthorized'], 401);
+    }
+    if ($admin['role'] !== 'OWNER') {
+        json_response(['error' => 'Forbidden'], 403);
     }
 }
 

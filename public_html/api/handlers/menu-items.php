@@ -1,5 +1,5 @@
 <?php
-require_admin();
+require_owner();
 
 if ($method === 'GET' && $sub === null) {
     $items = $pdo->query('SELECT * FROM MenuItem ORDER BY sortOrder ASC')->fetchAll();

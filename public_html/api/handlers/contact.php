@@ -22,7 +22,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'GET') {
-    require_admin();
+    require_owner();
     $submissions = $pdo->query('SELECT * FROM ContactSubmission ORDER BY createdAt DESC')->fetchAll();
     json_response($submissions);
 }

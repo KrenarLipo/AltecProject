@@ -1,5 +1,5 @@
 <?php
-require_admin();
+require_owner();
 
 if ($sub !== null && $subResource === 'images') {
     handle_item_images($pdo, 'ProductImage', 'productId', (int) $sub, $method, $subResourceId);

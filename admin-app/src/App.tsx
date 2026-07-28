@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import OwnerOnly from "./components/OwnerOnly";
 import AdminLayout from "./components/AdminLayout";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -14,6 +15,7 @@ import News from "./pages/News";
 import Pages from "./pages/Pages";
 import Settings from "./pages/Settings";
 import ContactSubmissions from "./pages/ContactSubmissions";
+import Users from "./pages/Users";
 
 export default function App() {
   return (
@@ -25,15 +27,16 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="products" element={<Products />} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="menu-items" element={<MenuItems />} />
-            <Route path="slides" element={<Slides />} />
+            <Route path="products" element={<OwnerOnly><Products /></OwnerOnly>} />
+            <Route path="categories" element={<OwnerOnly><Categories /></OwnerOnly>} />
+            <Route path="menu-items" element={<OwnerOnly><MenuItems /></OwnerOnly>} />
+            <Route path="slides" element={<OwnerOnly><Slides /></OwnerOnly>} />
             <Route path="works" element={<Works />} />
             <Route path="news" element={<News />} />
-            <Route path="pages" element={<Pages />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="contact-submissions" element={<ContactSubmissions />} />
+            <Route path="pages" element={<OwnerOnly><Pages /></OwnerOnly>} />
+            <Route path="settings" element={<OwnerOnly><Settings /></OwnerOnly>} />
+            <Route path="contact-submissions" element={<OwnerOnly><ContactSubmissions /></OwnerOnly>} />
+            <Route path="users" element={<OwnerOnly><Users /></OwnerOnly>} />
           </Route>
         </Route>
       </Routes>
