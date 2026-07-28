@@ -55,6 +55,13 @@ parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $currentQuery
         </a>
       <?php endforeach; ?>
     </div>
+    <div class="account-switch">
+      <?php if ($currentAdmin = current_admin()): ?>
+        <a href="/account.php"><?= h($currentAdmin['name'] ?? 'My Account') ?></a>
+      <?php else: ?>
+        <a href="/login.php">Login / Register</a>
+      <?php endif; ?>
+    </div>
   </div>
 </header>
 <main>

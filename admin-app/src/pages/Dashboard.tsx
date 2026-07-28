@@ -43,9 +43,11 @@ export default function Dashboard() {
         });
       });
     } else {
-      Promise.all([api.get<unknown[]>("/works"), api.get<unknown[]>("/news")]).then(([works, news]) => {
-        setCounts({ works: works.length, news: news.length });
-      });
+      Promise.all([api.get<unknown[]>("/products"), api.get<unknown[]>("/works"), api.get<unknown[]>("/news")]).then(
+        ([products, works, news]) => {
+          setCounts({ products: products.length, works: works.length, news: news.length });
+        },
+      );
     }
   }, [admin.role]);
 

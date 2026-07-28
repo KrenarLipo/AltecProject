@@ -27,8 +27,8 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="products" element={<OwnerOnly><Products /></OwnerOnly>} />
-            <Route path="categories" element={<OwnerOnly><Categories /></OwnerOnly>} />
+            <Route path="products" element={<Products />} />
+            <Route path="categories" element={<Categories />} />
             <Route path="menu-items" element={<OwnerOnly><MenuItems /></OwnerOnly>} />
             <Route path="slides" element={<OwnerOnly><Slides /></OwnerOnly>} />
             <Route path="works" element={<Works />} />

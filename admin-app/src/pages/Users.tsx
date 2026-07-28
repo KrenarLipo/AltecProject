@@ -2,19 +2,27 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, ApiError } from "../lib/api";
 import { useCurrentAdmin } from "../lib/AdminContext";
 
+type Role = "OWNER" | "EDITOR" | "SUBSCRIBER";
+
 type AdminUserRow = {
   id: number;
   name: string | null;
   email: string;
-  role: "OWNER" | "EDITOR";
+  role: Role;
   createdAt: string;
+};
+
+const roleLabels: Record<Role, string> = {
+  OWNER: "Administrator",
+  EDITOR: "Editor",
+  SUBSCRIBER: "Subscriber",
 };
 
 const emptyForm = {
   name: "",
   email: "",
   password: "",
-  role: "EDITOR" as "OWNER" | "EDITOR",
+  role: "EDITOR" as Role,
 };
 
 export default function Users() {
@@ -44,6 +52,15 @@ export default function Users() {
       setError(err instanceof ApiError ? err.message : "Something went wrong.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleRoleChange(id: number, role: Role) {
+    try {
+      await api.put(`/admin-users/${id}`, { role });
+      load();
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Something went wrong.");
     }
   }
 
@@ -78,7 +95,20 @@ export default function Users() {
                   <td>{user.name ?? "—"}</td>
                   <td>{user.email}</td>
                   <td>
-                    <span className="badge bg-primary">{user.role === "OWNER" ? "Administrator" : "Editor"}</span>
+                    {user.id === currentAdmin.id ? (
+                      <span className="badge bg-primary">{roleLabels[user.role]}</span>
+                    ) : (
+                      <select
+                        className="form-select form-select-sm d-inline-block"
+                        style={{ width: "auto" }}
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value as Role)}
+                      >
+                        <option value="OWNER">Administrator</option>
+                        <option value="EDITOR">Editor</option>
+                        <option value="SUBSCRIBER">Subscriber</option>
+                      </select>
+                    )}
                   </td>
                   <td className="text-end">
                     {user.id !== currentAdmin.id && (
@@ -132,13 +162,10 @@ export default function Users() {
             </div>
             <div className="mb-3">
               <label className="form-label">Role</label>
-              <select
-                className="form-select"
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value as "OWNER" | "EDITOR" })}
-              >
+              <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Role })}>
                 <option value="OWNER">Administrator (full access)</option>
-                <option value="EDITOR">Editor (News &amp; Works only)</option>
+                <option value="EDITOR">Editor (Products, Categories, News &amp; Works)</option>
+                <option value="SUBSCRIBER">Subscriber (no admin access)</option>
               </select>
             </div>
             {error && <p className="text-danger small">{error}</p>}

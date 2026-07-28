@@ -14,7 +14,7 @@ if ($method === 'POST' && $sub === null) {
     $password = $body['password'] ?? '';
     $role = $body['role'] ?? '';
 
-    if ($name === '' || $email === '' || !is_string($password) || strlen($password) < 8 || !in_array($role, ['OWNER', 'EDITOR'], true)) {
+    if ($name === '' || $email === '' || !is_string($password) || strlen($password) < 8 || !in_array($role, ['OWNER', 'EDITOR', 'SUBSCRIBER'], true)) {
         json_response(['error' => 'Invalid request'], 400);
     }
 
@@ -29,6 +29,23 @@ if ($method === 'POST' && $sub === null) {
         throw $e;
     }
     json_response(['id' => (int) $pdo->lastInsertId()], 201);
+}
+
+if ($sub !== null && $method === 'PUT') {
+    $body = request_body();
+    $role = $body['role'] ?? '';
+
+    if (!in_array($role, ['OWNER', 'EDITOR', 'SUBSCRIBER'], true)) {
+        json_response(['error' => 'Invalid role'], 400);
+    }
+
+    $admin = current_admin();
+    if ((int) $sub === (int) $admin['id']) {
+        json_response(['error' => "You can't change your own role"], 400);
+    }
+
+    $pdo->prepare('UPDATE AdminUser SET role = ? WHERE id = ?')->execute([$role, $sub]);
+    json_response(['ok' => true]);
 }
 
 if ($sub !== null && $method === 'DELETE') {

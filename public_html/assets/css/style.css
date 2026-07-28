@@ -198,6 +198,25 @@ img { max-width: 100%; display: block; }
   transform: scale(1.05);
 }
 
+.account-switch a {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  background: var(--color-blue);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.account-switch a:hover {
+  background: #0888c2;
+}
+
 /* ---------- Hero ---------- */
 
 .hero {

@@ -16,7 +16,7 @@ CREATE TABLE `AdminUser` (
     `name` VARCHAR(191) NULL,
     `email` VARCHAR(191) NOT NULL,
     `passwordHash` VARCHAR(191) NOT NULL,
-    `role` ENUM('OWNER', 'EDITOR') NOT NULL DEFAULT 'OWNER',
+    `role` ENUM('OWNER', 'EDITOR', 'SUBSCRIBER') NOT NULL DEFAULT 'SUBSCRIBER',
     `resetToken` VARCHAR(191) NULL,
     `resetTokenExpiresAt` DATETIME NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

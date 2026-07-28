@@ -39,10 +39,18 @@ function current_admin(): ?array {
     ];
 }
 
-/** Sends a 401 JSON response and exits if there's no logged-in admin. */
+/**
+ * Sends a 401/403 JSON response and exits unless the logged-in user is staff
+ * (OWNER or EDITOR). SUBSCRIBER accounts (public self-registration) can hold a
+ * session but have no admin-panel/API access at all.
+ */
 function require_admin(): void {
-    if (current_admin() === null) {
+    $admin = current_admin();
+    if ($admin === null) {
         json_response(['error' => 'Unauthorized'], 401);
+    }
+    if ($admin['role'] === 'SUBSCRIBER') {
+        json_response(['error' => 'Forbidden'], 403);
     }
 }
 

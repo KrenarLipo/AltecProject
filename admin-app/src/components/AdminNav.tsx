@@ -4,8 +4,8 @@ import { useCurrentAdmin } from "../lib/AdminContext";
 
 const links = [
   { href: "/", label: "Dashboard", ownerOnly: false, end: true },
-  { href: "/products", label: "Products", ownerOnly: true, end: false },
-  { href: "/categories", label: "Categories", ownerOnly: true, end: false },
+  { href: "/products", label: "Products", ownerOnly: false, end: false },
+  { href: "/categories", label: "Categories", ownerOnly: false, end: false },
   { href: "/menu-items", label: "Menu", ownerOnly: true, end: false },
   { href: "/slides", label: "Slideshow", ownerOnly: true, end: false },
   { href: "/works", label: "Works", ownerOnly: false, end: false },
@@ -28,7 +28,9 @@ export default function AdminNav({ open, onNavigate }: { open: boolean; onNaviga
   return (
     <nav className={`admin-sidebar d-flex flex-column bg-white border-end p-3 ${open ? "open" : ""}`}>
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <img src="/admin/altec-logo.png" alt="Altec Group" style={{ width: 130 }} />
+        <a href="/" title="Back to website">
+          <img src="/admin/altec-logo.png" alt="Altec Group" style={{ width: 130 }} />
+        </a>
         <button
           type="button"
           className="btn-close d-lg-none"

@@ -20,7 +20,9 @@ export default function AdminLayout() {
       <AdminNav open={sidebarOpen} onNavigate={() => setSidebarOpen(false)} />
       <div className="flex-grow-1 d-flex flex-column min-vw-0">
         <header className="admin-topbar d-flex align-items-center justify-content-between bg-white border-bottom px-3 py-2 sticky-top">
-          <img src="/admin/altec-logo.png" alt="Altec Group" style={{ height: 34 }} />
+          <a href="/" title="Back to website">
+            <img src="/admin/altec-logo.png" alt="Altec Group" style={{ height: 34 }} />
+          </a>
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm"
